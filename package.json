@@ -1,0 +1,26 @@
+{
+  "name": "monai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "less": "^4.2.1",
+    "matter-js": "^0.20.0",
+    "pinia": "^2.3.1",
+    "vue": "^3.4.31"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "@vue/babel-preset-jsx": "^1.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4",
+    "vue-tsc": "^2.0.24"
+  }
+}
