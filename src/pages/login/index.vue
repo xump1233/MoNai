@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import "./index.less";
 import DragUnit from "@/components/DragUnit/index.vue";
-import DragCanvas from "@/components/DragCanvas/index.vue";
-import BasicInput from "@/components/BasicComponents/BasicInput/index.vue";
 
 function handleClick(){
   console.log("click")
@@ -21,7 +19,6 @@ function handleClick(){
         <!-- <Input/> -->
       </div>
     </DragUnit>
-    <DragCanvas/>
   </div>
 </template>
 

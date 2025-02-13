@@ -1,0 +1,29 @@
+.page-editor-canvas-container{
+  flex:1;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+
+  .canvas-content{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width:550px;
+    height:550px;
+    background-color: aquamarine;
+    overflow: hidden;
+
+    .drag-mask{
+      position:absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #fff;
+      opacity: 0;
+      z-index: 2000;
+      display: none;
+    }
+  }
+}

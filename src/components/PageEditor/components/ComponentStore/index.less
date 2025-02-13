@@ -1,0 +1,28 @@
+.page-editor-component-store{
+  width: 280px;
+  height: 100%;
+  background-color: #f6f;
+  display: flex;
+  flex-direction: column;
+
+  .store-item{
+    height:50px;
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:#65f5;
+    border:2px #66f solid;
+    box-sizing: border-box;
+    margin-bottom: 2px;
+    position: relative;
+
+    &::after{
+      content:'';
+      position:absolute;
+      inset: 0;
+      
+    }
+  }
+
+}
