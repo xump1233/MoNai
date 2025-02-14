@@ -21,6 +21,7 @@ interface IComponentUnit {
     zIndex:number | string;
   }
   isTemporary?:boolean;
+  isMoveFocus?:boolean;
 }
 
 interface IPageData {

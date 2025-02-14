@@ -1,9 +1,13 @@
-import { defineComponent,ref,onMounted, render  } from "vue";
+import { defineComponent,ref,onMounted  } from "vue";
 import type { IComponentUnit } from "@/interface";
 import RenderUnit from "./components/RenderUnit";
 import "./index.less"
+
+
 import usePageData from "@/hooks/usePageData";
 import useDrag from "@/hooks/useDrag";
+import useUnitMove from "@/hooks/useUnitMove";
+
 import { DragState } from "@/constant";
 
 export default defineComponent({
@@ -12,8 +16,12 @@ export default defineComponent({
   },
   setup(props){
     const { setCanvas,dragState } = useDrag();
-    const canvasContainer = ref<HTMLElement>();
+    const { setMoveCanvas } = useUnitMove();
     const { pageData } = usePageData();
+
+    const canvasContainer = ref<HTMLElement>();
+    const moveContainer = ref<HTMLElement>();
+
     const pageContainer = pageData.value.pageContainer;
     const canvasSize = {
       width:typeof pageContainer.width === 'string' ? pageContainer.width : pageContainer.width + 'px',
@@ -21,14 +29,17 @@ export default defineComponent({
     };
     
     onMounted(()=>{
-      if(canvasContainer.value){{
+      if(canvasContainer.value){
         setCanvas(canvasContainer.value);
-      }}
+      }
+      if(moveContainer.value){
+        setMoveCanvas(moveContainer.value);
+      }
     })
 
     return ()=>(
       <div class="page-editor-canvas-container">
-        <div class="canvas-content" style={canvasSize}>
+        <div class="canvas-content" style={canvasSize} ref={moveContainer}>
           {pageData.value.components && pageData.value.components.map((unit:IComponentUnit)=>{
             return <RenderUnit unit={unit} key={unit.id}></RenderUnit>
           })}

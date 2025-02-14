@@ -66,11 +66,54 @@ function componentLeave(){
   temporaryComponent = null;
 }
 
+function findUnit(id:string){
+  const unitIndex = pageData.value.components.findIndex((item:IComponentUnit)=>item.id === id);
+  if(unitIndex === -1){
+    return {
+      unitIndex:-1,
+      unit:undefined,
+    };
+  }
+  return {
+    unitIndex,
+    unit:pageData.value.components[unitIndex],
+  }
+}
+function focusUnit(id:string){
+  const { unitIndex,unit } = findUnit(id);
+  if(!unit){
+    return false;
+  }
+  return pageData.value.components.splice(unitIndex,1,{
+    ...unit,
+    isMoveFocus:true,
+  })
+
+}
+function moveUnit(id:string,position:{top:number,left:number}){
+  const { unitIndex,unit } = findUnit(id);
+  if(!unit){
+    console.log("未找到该组件");
+    return false;
+  }
+  console.log("change")
+  return pageData.value.components.splice(unitIndex,1,{
+    ...unit,
+    position:{
+      ...unit.position,
+      ...position,
+    }
+  })
+
+}
+
 export default function(){
   return {
     pageData,
     pushComponent,
     componentOver,
-    componentLeave
+    componentLeave,
+    focusUnit,
+    moveUnit
   }
 }
