@@ -15,43 +15,54 @@ export default defineComponent({
   setup(props) {
     const RenderComponent = config.componentMap[props.unit?.type].render;
     const unitRef = ref<HTMLElement | null>(null);
-    const { focusUnit,moveUnit } = usePageData();
-    const { moveCanvas } = useUnitMove();
-    const basicOffsetLeft = ref<number>(0);
-    const basicOffsetTop = ref<number>(0);
+    const { focusUnit,unFocusUnit,moveUnit,moveFocusUnit } = usePageData();
+    const { moveCanvas,moveUnitList } = useUnitMove();
     const lastTop = ref();
     const lastLeft = ref();
 
     function mouseDown(e:MouseEvent){
-      basicOffsetLeft.value = e.offsetX;
-      basicOffsetTop.value = e.offsetY;
-
-      focusUnit(props.unit.id);
-      window.addEventListener("mousemove",mouseMove);
-      window.addEventListener("mouseup",mouseUp);
-
+      e.stopPropagation();
+      lastLeft.value = undefined;
+      lastTop.value = undefined;
+      moveUnitList.value.push(props.unit.id);
+      if(e.ctrlKey){
+        focusUnit(props.unit.id);
+      }
+      else{
+        focusUnit(props.unit.id);
+        window.addEventListener("mousemove",mouseMove);
+        window.addEventListener("mouseup",mouseUp);
+      }
     }
     function mouseMove(e:MouseEvent){
       if(moveCanvas.value){
-        let top:number
-        let left:number
+        let offsetTop:number
+        let offsetLeft:number
         if(lastLeft.value !== void 0 && lastTop.value !== void 0){
-          top = (props.unit.position.top as number) - (- e.clientY + lastTop.value);
-          left = (props.unit.position.left as number) - (- e.clientX + lastLeft.value);
+          offsetTop =  - (- e.clientY + lastTop.value);
+          offsetLeft =  - (- e.clientX + lastLeft.value);
         }
         else{
-          top = props.unit.position.top as number;
-          left = props.unit.position.left as number;
+          offsetTop = 0;
+          offsetLeft = 0;
         }
         lastTop.value = e.clientY;
         lastLeft.value = e.clientX;
-        moveUnit(props.unit.id,{top,left});
+        if(moveUnitList.value.length > 1){
+          moveFocusUnit({offsetTop,offsetLeft});
+        }
+        else{
+          moveUnit(props.unit.id,{offsetTop,offsetLeft});
+        }
         
       }
 
     }
-    console.log('render')
     function mouseUp(){
+      if(moveUnitList.value.length === 1){
+        unFocusUnit(props.unit.id);
+        moveUnitList.value = moveUnitList.value.filter((item:string)=>item !== props.unit.id)
+      }
       window.removeEventListener("mousemove",mouseMove);
       window.removeEventListener("mouseup",mouseUp);
     }

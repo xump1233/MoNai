@@ -79,6 +79,7 @@ function findUnit(id:string){
     unit:pageData.value.components[unitIndex],
   }
 }
+
 function focusUnit(id:string){
   const { unitIndex,unit } = findUnit(id);
   if(!unit){
@@ -88,24 +89,47 @@ function focusUnit(id:string){
     ...unit,
     isMoveFocus:true,
   })
-
 }
-function moveUnit(id:string,position:{top:number,left:number}){
+function unFocusUnit(id:string){
+  const { unitIndex,unit } = findUnit(id);
+  if(!unit){
+    return false;
+  }
+  return pageData.value.components.splice(unitIndex,1,{
+    ...unit,
+    isMoveFocus:false,
+  })
+}
+function unFocusAllUnit(){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    if(unit.isMoveFocus){
+      unFocusUnit(unit.id);
+    }
+  })
+}
+function moveUnit(id:string,position:{offsetTop:number,offsetLeft:number}){
   const { unitIndex,unit } = findUnit(id);
   if(!unit){
     console.log("未找到该组件");
     return false;
   }
-  console.log("change")
   return pageData.value.components.splice(unitIndex,1,{
     ...unit,
     position:{
-      ...unit.position,
-      ...position,
+      top:unit.position.top as number + position.offsetTop,
+      left:unit.position.left as number + position.offsetLeft,
+      zIndex:unit.position.zIndex,
     }
   })
-
 }
+function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    if(unit.isMoveFocus){
+      moveUnit(unit.id,position);
+    }
+  })
+}
+
 
 export default function(){
   return {
@@ -114,6 +138,9 @@ export default function(){
     componentOver,
     componentLeave,
     focusUnit,
-    moveUnit
+    unFocusUnit,
+    moveUnit,
+    moveFocusUnit,
+    unFocusAllUnit,
   }
 }

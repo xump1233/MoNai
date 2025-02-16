@@ -16,8 +16,8 @@ export default defineComponent({
   },
   setup(props){
     const { setCanvas,dragState } = useDrag();
-    const { setMoveCanvas } = useUnitMove();
-    const { pageData } = usePageData();
+    const { setMoveCanvas,moveUnitList } = useUnitMove();
+    const { pageData,unFocusAllUnit } = usePageData();
 
     const canvasContainer = ref<HTMLElement>();
     const moveContainer = ref<HTMLElement>();
@@ -39,7 +39,10 @@ export default defineComponent({
 
     return ()=>(
       <div class="page-editor-canvas-container">
-        <div class="canvas-content" style={canvasSize} ref={moveContainer}>
+        <div class="canvas-content" style={canvasSize} ref={moveContainer} onMousedown={()=>{
+          unFocusAllUnit();
+          moveUnitList.value = [];
+        }}>
           {pageData.value.components && pageData.value.components.map((unit:IComponentUnit)=>{
             return <RenderUnit unit={unit} key={unit.id}></RenderUnit>
           })}
