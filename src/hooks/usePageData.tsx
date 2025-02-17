@@ -1,11 +1,12 @@
 import type { IComponentUnit, IPageData } from "@/interface";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 
 const pageData = ref<IPageData>({
   pageContainer:{
     width:550,
     height:550,
+    currentReta:0.5,
   },
   components:[{
     name:'input',
@@ -36,12 +37,27 @@ const pageData = ref<IPageData>({
     }
   },]
 });
+function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    if(unit.id === id){
+      if(unit.props){
+        unit.props = {
+          ...unit.props,
+          ...widthAndHeight,
+        }
+      }else{
+        unit.props = widthAndHeight;
+      }
+    }
+  })
+}
+
+
 let temporaryComponent:IComponentUnit | null = null;
 function pushComponent(unit:IComponentUnit){
   componentLeave();
   pageData.value.components.push(unit);
 }
-
 function componentOver(position: { top: number; left: number; zIndex: number }) {
   if (temporaryComponent) {
     temporaryComponent.position = position;
@@ -80,11 +96,20 @@ function findUnit(id:string){
   }
 }
 
+
+const moveUnitList = ref<string[]>([]);
+const currentMoveUnit = ref<HTMLElement>();
+const unFocusList = computed(()=>{
+  return pageData.value.components.filter((unit:IComponentUnit)=>{
+    return !unit.isMoveFocus
+  })
+})
 function focusUnit(id:string){
   const { unitIndex,unit } = findUnit(id);
   if(!unit){
     return false;
   }
+  moveUnitList.value.push(id);
   return pageData.value.components.splice(unitIndex,1,{
     ...unit,
     isMoveFocus:true,
@@ -95,6 +120,7 @@ function unFocusUnit(id:string){
   if(!unit){
     return false;
   }
+  moveUnitList.value = moveUnitList.value.filter((item:string)=>item !== id)
   return pageData.value.components.splice(unitIndex,1,{
     ...unit,
     isMoveFocus:false,
@@ -104,6 +130,24 @@ function unFocusAllUnit(){
   pageData.value.components.forEach((unit:IComponentUnit)=>{
     if(unit.isMoveFocus){
       unFocusUnit(unit.id);
+    }
+  })
+  moveUnitList.value = [];
+}
+function isFocus(id:string){
+  const { unit } = findUnit(id);
+  if(!unit){
+    return false;
+  }
+  return unit.isMoveFocus
+}
+function focusRangeUnit(begin:{top:number,left:number},end:{top:number,left:number}){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    const top = unit.position.top as number;
+    const left = unit.position.left as number;
+    const condition = (top >= begin.top && top <= end.top) && (left >= begin.left && left <= end.left);
+    if(condition){
+      focusUnit(unit.id);
     }
   })
 }
@@ -129,18 +173,27 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
     }
   })
 }
-
+function setCurrentMoveUnit(ele:HTMLElement){
+  currentMoveUnit.value = ele;
+}
 
 export default function(){
   return {
     pageData,
+    setWidthAndHeight,
     pushComponent,
     componentOver,
     componentLeave,
+
+    findUnit,
+    unFocusList,
     focusUnit,
     unFocusUnit,
-    moveUnit,
-    moveFocusUnit,
     unFocusAllUnit,
+    focusRangeUnit,
+    isFocus,
+    moveFocusUnit,
+    moveUnitList,
+    setCurrentMoveUnit
   }
 }

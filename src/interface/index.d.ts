@@ -28,6 +28,7 @@ interface IPageData {
   pageContainer:{
     width:number | string,
     height:number | string,
+    currentReta:number,
   },
   components:IComponentUnit[]
 }

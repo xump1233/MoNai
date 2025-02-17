@@ -10,7 +10,7 @@ export default defineComponent({
   props:{
 
   },
-  setup(props){
+  setup(){
     return ()=>(
       <div class="page-editor">
         <OperateBar></OperateBar>

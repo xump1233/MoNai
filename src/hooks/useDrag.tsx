@@ -38,6 +38,7 @@ function dragLeave(e:DragEvent){
 }
 function drop(e:DragEvent){
   if(dragComponent.value){
+    console.log(dragComponent.value)
     pushComponent({
       name:dragComponent.value.name,
       id:`${dragComponent.value.name}-${Date.now()}`,

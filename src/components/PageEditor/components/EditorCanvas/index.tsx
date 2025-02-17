@@ -6,7 +6,7 @@ import "./index.less"
 
 import usePageData from "@/hooks/usePageData";
 import useDrag from "@/hooks/useDrag";
-import useUnitMove from "@/hooks/useUnitMove";
+import useSelectFocus from "./hooks/useSelectFocus";
 
 import { DragState } from "@/constant";
 
@@ -14,11 +14,10 @@ export default defineComponent({
   props:{
     
   },
-  setup(props){
+  setup(){
     const { setCanvas,dragState } = useDrag();
-    const { setMoveCanvas,moveUnitList } = useUnitMove();
     const { pageData,unFocusAllUnit } = usePageData();
-
+    const { mouseDown,selectMaskStyle } = useSelectFocus();
     const canvasContainer = ref<HTMLElement>();
     const moveContainer = ref<HTMLElement>();
 
@@ -28,25 +27,24 @@ export default defineComponent({
       height:typeof pageContainer.height === 'string' ? pageContainer.height : pageContainer.height + 'px'
     };
     
+    
     onMounted(()=>{
       if(canvasContainer.value){
         setCanvas(canvasContainer.value);
       }
-      if(moveContainer.value){
-        setMoveCanvas(moveContainer.value);
-      }
     })
 
     return ()=>(
-      <div class="page-editor-canvas-container">
-        <div class="canvas-content" style={canvasSize} ref={moveContainer} onMousedown={()=>{
+      <div class="page-editor-canvas-container unselectable">
+        <div class="canvas-content" style={canvasSize} ref={moveContainer} onMousedown={(e)=>{
           unFocusAllUnit();
-          moveUnitList.value = [];
+          mouseDown(e);
         }}>
           {pageData.value.components && pageData.value.components.map((unit:IComponentUnit)=>{
             return <RenderUnit unit={unit} key={unit.id}></RenderUnit>
           })}
           <div class="drag-mask" style={dragState.value === DragState.DRAGGING ? {display:"block"} : {}}  ref={canvasContainer}></div>
+          <div class="select-mask" style={selectMaskStyle.value}></div>
         </div>
       </div>
     )
