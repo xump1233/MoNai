@@ -16,13 +16,12 @@ export default defineComponent({
   setup(props) {
     const RenderComponent = config.componentMap[props.unit?.type].render;
     const unitRef = ref<HTMLElement | null>(null);
-    const { mouseDown,setUnitRef } = useMoveUnit(props.unit.id);
+    const { mouseDown } = useMoveUnit(props.unit.id);
     const { setWidthAndHeight } = usePageData();
 
 
     onMounted(()=>{
       if(unitRef.value){
-        setUnitRef(unitRef.value);
         unitRef.value.addEventListener("mousedown",mouseDown);
         const { offsetWidth,offsetHeight } = unitRef.value;
         setWidthAndHeight(props.unit.id,{width:offsetWidth,height:offsetHeight});

@@ -16,7 +16,7 @@ export default defineComponent({
   },
   setup(){
     const { setCanvas,dragState } = useDrag();
-    const { pageData,unFocusAllUnit } = usePageData();
+    const { pageData,unFocusAllUnit,lines } = usePageData();
     const { mouseDown,selectMaskStyle } = useSelectFocus();
     const canvasContainer = ref<HTMLElement>();
     const moveContainer = ref<HTMLElement>();
@@ -45,6 +45,12 @@ export default defineComponent({
           })}
           <div class="drag-mask" style={dragState.value === DragState.DRAGGING ? {display:"block"} : {}}  ref={canvasContainer}></div>
           <div class="select-mask" style={selectMaskStyle.value}></div>
+          {lines.value?.y && Array.from(lines.value.y).map((top:number)=>{
+            return <div class="line-y" style={{top:top+"px"}}></div>
+          })}
+          {lines.value?.x && Array.from(lines.value.x).map((left:number)=>{
+            return <div class="line-x" style={{left:left+"px"}}></div>
+          })}
         </div>
       </div>
     )
