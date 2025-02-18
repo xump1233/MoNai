@@ -4,15 +4,33 @@
   overflow: auto;
   position: relative;
 
+  &::-webkit-scrollbar{
+    width:5px;
+    height: 5px;
+  }
+  &::-webkit-scrollbar-track{
+    background:#ddd;
+    border-radius: 5px; /* 圆角 */
+  }
+  &::-webkit-scrollbar-thumb{
+    background:#999;
+    border-radius: 5px; /* 圆角 */
+  }
   .canvas-content{
     position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    width:550px;
+    top:10px;
+    left: 10px;
+    margin-bottom: 10px;
+    margin-right:10px;
+    width:1980px;
     height:550px;
-    background-color: aquamarine;
+    background-color: #fff;
+    background-size: 10px 10px; /* 控制网格的大小 */
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
     overflow: hidden;
+
 
     .drag-mask{
       position:absolute;
@@ -53,4 +71,11 @@
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.grab{
+  cursor:grab;
+}
+.grabbing{
+  cursor: grabbing;
 }

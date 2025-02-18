@@ -1,11 +1,11 @@
 import type { IComponentUnit, IPageData } from "@/interface";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 
 const pageData = ref<IPageData>({
   pageContainer:{
-    width:550,
-    height:550,
+    width:1280,//1980px,1280,800
+    height:768,//1080px,768,600
     currentReta:0.5,
   },
   components:[{
@@ -98,7 +98,6 @@ function findUnit(id:string){
 
 
 const moveUnitList = ref<string[]>([]);
-const currentMoveUnit = ref<HTMLElement>();
 const lines = ref<{x:Set<number>,y:Set<number>}>();
 const unFocusList = computed(()=>{
   return pageData.value.components.filter((unit:IComponentUnit)=>{
@@ -177,9 +176,7 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
     }
   })
 }
-function setCurrentMoveUnit(ele:HTMLElement){
-  currentMoveUnit.value = ele;
-}
+
 
 export default function(){
   return {
@@ -198,7 +195,6 @@ export default function(){
     isFocus,
     moveFocusUnit,
     moveUnitList,
-    setCurrentMoveUnit,
     lines,
     setLines,
   }

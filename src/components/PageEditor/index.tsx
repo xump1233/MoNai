@@ -6,11 +6,14 @@ import ComponentStore from "./components/ComponentStore";
 import EditorCanvas from "./components/EditorCanvas";
 import PropsEditor from "./components/PropsEditor";
 
+import useCommend from "@/hooks/useCommend";
+
 export default defineComponent({
   props:{
 
   },
   setup(){
+    useCommend();
     return ()=>(
       <div class="page-editor">
         <OperateBar></OperateBar>
