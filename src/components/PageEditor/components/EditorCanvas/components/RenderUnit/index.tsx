@@ -19,7 +19,6 @@ export default defineComponent({
     const { mouseDown } = useMoveUnit(props.unit.id);
     const { setWidthAndHeight } = usePageData();
 
-
     onMounted(()=>{
       if(unitRef.value){
         unitRef.value.addEventListener("mousedown",mouseDown);
@@ -27,18 +26,21 @@ export default defineComponent({
         setWidthAndHeight(props.unit.id,{width:offsetWidth,height:offsetHeight});
       }
     })
-    return () => (
-      <div
-        class={`render-unit ${props.unit.isMoveFocus ? "unit-focus" : ""}`}
-        style={{
-          top: `${props.unit.position.top}px`,
-          left: `${props.unit.position.left}px`,
-          zIndex: props.unit.position.zIndex,
-        }}
-        ref={unitRef}
-      >
-        <RenderComponent></RenderComponent>
-      </div>
-    );
+    return () => {
+      const targetComponent = config.componentMap[props.unit?.temporaryTarget as string];
+      return (
+        <div
+          class={`render-unit ${props.unit.isMoveFocus ? "unit-focus" : ""}`}
+          style={{
+            top: `${props.unit.position.top}px`,
+            left: `${props.unit.position.left}px`,
+            zIndex: props.unit.position.zIndex,
+          }}
+          ref={unitRef}
+        >
+          <RenderComponent size={targetComponent && {width:targetComponent.defaultWidth,height:targetComponent.defaultHeight}}></RenderComponent>
+        </div>
+      );
+    }
   },
 });

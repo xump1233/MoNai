@@ -18,6 +18,7 @@ export default defineComponent({
   setup(){
     const canvasContainer = ref<HTMLElement>();
     const moveContainer = ref<HTMLElement>();
+    const scrollContainer = ref<HTMLElement>();
     const isKeySpace = ref<boolean>(false);
 
     const { setCanvas,dragState } = useDrag();
@@ -40,15 +41,19 @@ export default defineComponent({
     })
     function keyboardMove(e:KeyboardEvent){
       if(e.code === "ArrowLeft"){
+        e.preventDefault();
         moveFocusUnit({offsetLeft:-1,offsetTop:0});
       }
       if(e.code === "ArrowRight"){
+        e.preventDefault();
         moveFocusUnit({offsetLeft:1,offsetTop:0});
       }
       if(e.code === "ArrowUp"){
+        e.preventDefault();
         moveFocusUnit({offsetLeft:0,offsetTop:-1});
       }
       if(e.code === "ArrowDown"){
+        e.preventDefault();
         moveFocusUnit({offsetLeft:0,offsetTop:1});
       }
     }
@@ -80,7 +85,6 @@ export default defineComponent({
         isKeySpace.value = false;
       })
     })
-    const scrollContainer = ref<HTMLElement>();
     
 
     return ()=>(

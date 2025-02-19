@@ -1,4 +1,4 @@
-import type { IComponentUnit, IPageData } from "@/interface";
+import type { IBasicComponent, IComponentUnit, IPageData } from "@/interface";
 import { computed, ref } from "vue";
 
 
@@ -58,11 +58,11 @@ function pushComponent(unit:IComponentUnit){
   componentLeave();
   pageData.value.components.push(unit);
 }
-function componentOver(position: { top: number; left: number; zIndex: number }) {
+function componentOver(target:IBasicComponent,position: { top: number; left: number; zIndex: number }) {
   if (temporaryComponent) {
     temporaryComponent.position = position;
     // 使用 Vue 提供的响应式方法修改数组
-    const newComponents = pageData.value.components.filter((item: IComponentUnit) => !item.isTemporary);
+    const newComponents = pageData.value.components.filter((item: IComponentUnit) => !item.temporaryTarget);
     newComponents.push(JSON.parse(JSON.stringify(temporaryComponent)));
     pageData.value.components = newComponents;
   } else {
@@ -71,7 +71,7 @@ function componentOver(position: { top: number; left: number; zIndex: number }) 
       id: `temporary-${Date.now()}`, // 使用时间戳生成唯一的ID
       type: "temporary",
       position: position,
-      isTemporary: true,
+      temporaryTarget: target.name,
     };
     // 使用 Vue 提供的响应式方法修改数组
     pageData.value.components.push(temporaryComponent);

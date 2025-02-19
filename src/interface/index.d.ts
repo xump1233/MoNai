@@ -20,7 +20,7 @@ interface IComponentUnit {
     left:number | string;
     zIndex:number | string;
   }
-  isTemporary?:boolean;
+  temporaryTarget?:string;
   isMoveFocus?:boolean;
 }
 

@@ -5,6 +5,7 @@ import OperateBar from "./components/OperateBar";
 import ComponentStore from "./components/ComponentStore";
 import EditorCanvas from "./components/EditorCanvas";
 import PropsEditor from "./components/PropsEditor";
+import BottomBar from "./components/BottomBar";
 
 import useCommend from "@/hooks/useCommend";
 
@@ -20,8 +21,9 @@ export default defineComponent({
         <div class="editor-container">
           <ComponentStore></ComponentStore>
           <EditorCanvas></EditorCanvas>
-          <PropsEditor></PropsEditor>
+          {/* <PropsEditor></PropsEditor> */}
         </div>
+        <BottomBar></BottomBar>
       </div>
     )
   }

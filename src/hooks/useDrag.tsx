@@ -19,7 +19,7 @@ function dragStart(e:DragEvent,component:IBasicComponent){
   dragComponent.value = component;
 }
 function dragEnter(e:DragEvent){
-  componentOver({
+  componentOver(dragComponent.value as IBasicComponent,{
     top:e.offsetY,
     left:e.offsetX,
     zIndex:22
@@ -27,7 +27,7 @@ function dragEnter(e:DragEvent){
 }
 function dragOver(e:DragEvent){
   e.preventDefault();
-  componentOver({
+  componentOver(dragComponent.value as IBasicComponent,{
     top:e.offsetY,
     left:e.offsetX,
     zIndex:22
@@ -38,7 +38,6 @@ function dragLeave(e:DragEvent){
 }
 function drop(e:DragEvent){
   if(dragComponent.value){
-    console.log(dragComponent.value)
     pushComponent({
       name:dragComponent.value.name,
       id:`${dragComponent.value.name}-${Date.now()}`,
