@@ -10,7 +10,7 @@ export default defineComponent({
 
     return ()=>(
       <div class="page-editor-bottom-bar">
-        canvas
+        canvas bottom bar
       </div>
     )
   }

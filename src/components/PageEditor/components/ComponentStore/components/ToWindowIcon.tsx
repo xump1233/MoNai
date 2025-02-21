@@ -10,7 +10,10 @@ export default defineComponent({
 
     return ()=>(
       <svg
-        onClick={()=>{props.onClick && props.onClick()}}
+        onClick={(e:Event)=>{
+          e.stopPropagation();
+          props.onClick && props.onClick();
+        }}
         onMouseover={()=>{
           iconColor.value = "#1296db";
         }}

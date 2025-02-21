@@ -4,8 +4,8 @@ import { computed, ref } from "vue";
 
 const pageData = ref<IPageData>({
   pageContainer:{
-    width:1280,//1980px,1280,800
-    height:768,//1080px,768,600
+    width:1980,//1980px,1280,800
+    height:1080,//1080px,768,600
     currentReta:0.5,
   },
   components:[{
