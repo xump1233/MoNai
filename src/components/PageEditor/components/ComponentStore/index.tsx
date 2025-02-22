@@ -4,6 +4,7 @@ import './index.less'
 import type { IBasicComponent } from "@/interface";
 import useDrag from "@/hooks/useDrag";
 import useStoreMove from "./hooks/useStoreMove";
+import useResize from "./hooks/useResize";
 
 import ToWindowIcon from "./components/ToWindowIcon";
 import ToMinIcon from "./components/ToMinIcon";
@@ -12,7 +13,7 @@ export default defineComponent({
   props:{
 
   },
-  setup(props){
+  setup(){
     const StoreState = ref<"left" | "min" | "float">("left");
     const ClassMap = {
       "left":"",
@@ -20,19 +21,25 @@ export default defineComponent({
       "float":"float-state"
     }
     const { dragStart } = useDrag();
-    const { mouseDown,offsetX,offsetY }  = useStoreMove(()=>{
-      storePosition.value.top = storePosition.value.top - offsetY.value;
-      storePosition.value.left = storePosition.value.left - offsetX.value;
+    const { mouseDown,storePosition }  = useStoreMove({
+      top:50,
+      left:200
+    });
+    const { targetRect,resizeDown,offsetX,offsetY } = useResize({
+      width:600,
+      height:500
     });
     const componentList = config.componentList;
 
-    const storePosition = ref<{top:number,left:number}>({top:50,left:200});
+
     return ()=>(
       <div 
         class={`page-editor-component-store unselectable ${ClassMap[StoreState.value]}`}
         style={StoreState.value === "float" && {
-          top:storePosition.value.top - offsetY.value + "px",
-          left:storePosition.value.left - offsetX.value + "px"
+          top:storePosition.value.top + offsetY.value + "px",
+          left:storePosition.value.left + offsetX.value + "px",
+          width:targetRect.value.width + "px",
+          height:targetRect.value.height + "px"
         }}
       >
         <div class="store-top" onMousedown={(e:MouseEvent)=>{
@@ -66,6 +73,20 @@ export default defineComponent({
           )
         })}
         </div>
+        {StoreState.value === "float" && (<>
+          <div class="edge-lr edge-left" onMousedown={(e:MouseEvent)=>{
+            resizeDown(e,"left");
+          }}></div>
+          <div class="edge-lr edge-right" onMousedown={(e:MouseEvent)=>{
+            resizeDown(e,"right");
+          }}></div>
+          <div class="edge-tb edge-top" onMousedown={(e:MouseEvent)=>{
+            resizeDown(e,"top");
+          }}></div>
+          <div class="edge-tb edge-bottom" onMousedown={(e:MouseEvent)=>{
+            resizeDown(e,"bottom");
+          }}></div>
+        </>)}
       </div>
     )
   }

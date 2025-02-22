@@ -1,9 +1,9 @@
 import { ref } from "vue";
 
-export default function(moveEnd:()=>void){
+export default function(position:{top:number,left:number}){
+  const start = ref<{top:number,left:number}>(position)
+  const storePosition = ref<{top:number,left:number}>({top:position.top,left:position.left});
   const begin = ref<{x:number,y:number}>();
-  const offsetX = ref<number>(0);
-  const offsetY = ref<number>(0);
   function mouseDown(e:MouseEvent){
     begin.value = {
       x:e.clientX,
@@ -14,21 +14,19 @@ export default function(moveEnd:()=>void){
   }
   function mouseOver(e:MouseEvent){
     if(begin.value){
-      offsetX.value = begin.value.x - e.clientX;
-      offsetY.value = begin.value.y - e.clientY;
+      storePosition.value.left = start.value.left - (begin.value.x - e.clientX);
+      storePosition.value.top = start.value.top - (begin.value.y - e.clientY);
     }
   }
   function mouseUp(e:MouseEvent){
-    moveEnd();
-    offsetX.value = 0;
-    offsetY.value = 0;
+    start.value.left = storePosition.value.left;
+    start.value.top = storePosition.value.top;
     window.removeEventListener("mousemove",mouseOver);
     window.removeEventListener("mouseup",mouseUp);
   }
 
   return {
     mouseDown,
-    offsetX,
-    offsetY
+    storePosition
   }
 }
