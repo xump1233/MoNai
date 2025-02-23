@@ -33,6 +33,15 @@ interface IPageData {
   components:IComponentUnit[]
 }
 
+interface IBottomBarItem {
+  name:string;
+  cb?:()=>void;
+  textColor?:string;
+  bgColor?:string;
+  icon?:any
+}
+
+
 type DragStateType = typeof DragState[keyof typeof DragState];
 
 export {
@@ -40,5 +49,6 @@ export {
   DragStateType,
   IBasicComponent,
   IComponentUnit,
-  IPageData
+  IPageData,
+  IBottomBarItem,
 }

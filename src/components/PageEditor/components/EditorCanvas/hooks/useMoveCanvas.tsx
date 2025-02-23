@@ -30,7 +30,7 @@ export default function({isKeySpace,}:{isKeySpace:Ref<boolean>}){
       })
     }
   }
-  function moveCanvasUp(e:MouseEvent){
+  function moveCanvasUp(_:MouseEvent){
     if(isKeySpace.value){
       moveContainer.value?.classList.remove("grabbing");
     }

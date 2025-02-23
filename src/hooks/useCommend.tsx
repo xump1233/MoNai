@@ -1,6 +1,5 @@
 import { ref } from "vue";
 import usePageData from "./usePageData";
-import type { IPageData } from "@/interface";
 
 
 const { pageData } = usePageData();

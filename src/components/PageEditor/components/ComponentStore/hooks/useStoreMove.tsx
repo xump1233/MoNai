@@ -18,7 +18,7 @@ export default function(position:{top:number,left:number}){
       storePosition.value.top = start.value.top - (begin.value.y - e.clientY);
     }
   }
-  function mouseUp(e:MouseEvent){
+  function mouseUp(_:MouseEvent){
     start.value.left = storePosition.value.left;
     start.value.top = storePosition.value.top;
     window.removeEventListener("mousemove",mouseOver);

@@ -6,7 +6,7 @@ export default defineComponent({
   props:{
 
   },
-  setup(props){
+  setup(_){
 
     return ()=>(
       <div class="page-editor-props-editor">

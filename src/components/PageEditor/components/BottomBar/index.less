@@ -1,5 +1,32 @@
 .page-editor-bottom-bar{
   height:30px;
   width:100%;
-  background-color: #6ff;
+  background-color: #66ffff40;
+  display: flex;
+  justify-content: space-between;
+
+  .nav-container{
+    display: flex;
+    height:100%;
+    font-size: 14px;
+    font-weight: 600;
+    color:rgb(64, 96, 122);
+    padding-left: 20px;
+
+    .nav-item{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #a5b287a2;
+      padding:0px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin:2px 0px;
+      margin-left:10px;
+    }
+
+    .nav-item:hover{
+      filter: brightness(140%);
+    }
+  }
 }

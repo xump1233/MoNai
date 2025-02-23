@@ -1,6 +1,7 @@
 import { defineComponent,ref,onMounted,onUnmounted  } from "vue";
 import type { IComponentUnit } from "@/interface";
 import RenderUnit from "./components/RenderUnit";
+import ContextMenu from "@/components/ContextMenu/index.vue"
 import "./index.less"
 
 
@@ -80,12 +81,29 @@ export default defineComponent({
           isKeySpace.value = true;
         } 
       })
-      window.addEventListener("keyup",(e)=>{
+      window.addEventListener("keyup",(_)=>{
         moveContainer.value?.classList.remove("grab");
         isKeySpace.value = false;
       })
     })
     
+
+    const menuList = ref([{
+      label:"添加逻辑",
+      name:"addLogic"
+    },{
+      label:"上移一层",
+      name:"moveUp"
+    },{
+      label:"下移一层",
+      name:"moveDown"
+    },{
+      label:"置于底层",
+      name:"toBottom"
+    },{
+      label:"置于顶层",
+      name:"toTop"
+    }]);
 
     return ()=>(
       <div class="page-editor-canvas-container unselectable" ref={scrollContainer}>
@@ -95,7 +113,13 @@ export default defineComponent({
           moveCanvasDown(e);
         }}>
           {pageData.value.components && pageData.value.components.map((unit:IComponentUnit)=>{
-            return <RenderUnit unit={unit} key={unit.id}></RenderUnit>
+            return (
+              <ContextMenu list={menuList.value} onSelect={(label:string)=>{
+                console.log(label)
+              }}>
+                <RenderUnit unit={unit} key={unit.id}></RenderUnit>
+              </ContextMenu>
+            )
           })}
           <div class="drag-mask" style={dragState.value === DragState.DRAGGING ? {display:"block"} : {}}  ref={canvasContainer}></div>
           <div class="select-mask" style={selectMaskStyle.value}></div>

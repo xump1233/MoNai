@@ -14,7 +14,7 @@ function setDragState(state:DragStateType){
   dragState.value = state;
 }
 
-function dragStart(e:DragEvent,component:IBasicComponent){
+function dragStart(_:DragEvent,component:IBasicComponent){
   setDragState(DragState.DRAGGING);
   dragComponent.value = component;
 }
@@ -33,7 +33,7 @@ function dragOver(e:DragEvent){
     zIndex:22
   })
 }
-function dragLeave(e:DragEvent){
+function dragLeave(){
   componentLeave();
 }
 function drop(e:DragEvent){

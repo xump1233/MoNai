@@ -38,7 +38,7 @@ export default function(rect:{width:number,height:number}){
       targetRect.value.height = initRect.value.height + curOffsetY;
     }
   }
-  function resizeUp(e:MouseEvent){
+  function resizeUp(_:MouseEvent){
     lastOffsetX = offsetX.value;
     lastOffsetY = offsetY.value;
     initRect.value.width = targetRect.value.width;
