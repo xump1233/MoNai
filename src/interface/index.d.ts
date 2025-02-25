@@ -8,6 +8,8 @@ interface IBasicComponent {
   defaultHeight:number;
   preview:(props?:any)=>any;
   render:(props?:any)=>any;
+  props:any,
+  editProps:any
 }
 
 interface IComponentUnit {

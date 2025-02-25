@@ -21,6 +21,7 @@
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/babel-preset-jsx": "^1.4.0",
+    "naive-ui": "^2.41.0",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vue-tsc": "^2.0.24"
