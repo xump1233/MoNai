@@ -21,6 +21,9 @@ export default function(id:string){
 
   function mouseDown(e:MouseEvent){
     e.stopPropagation();
+    if(e.button !== 0){
+      return;
+    }
     startX.value = e.clientX;
     startY.value = e.clientY;
     lastLeft.value = undefined;

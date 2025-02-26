@@ -2,6 +2,8 @@ import type { IBasicComponent, IComponentUnit } from "@/interface"
 
 import PreviewBox from "@/components/PreviewBox";
 import PropsEditBox from "@/components/PropsEditBox";
+import BasicText from "@/components/BasicComponents/BasicText";
+
 import { 
   NButton,
   NInput,
@@ -41,19 +43,10 @@ registerConfig.register({
     </PreviewBox>
   ),
   render:(props)=>{
-    return <div style={{
-      fontSize:props.fontSize + "px",
-      color:props.color
-    }}
-    >{props.value || "默认文本"}</div>
+
+    return <BasicText {...props} />
   },
-  props:{
-    defaultValue:"",
-    fontSize:"",
-    color:"",
-    width:0,
-    height:0  
-  },
+  props:{},
   editProps:({ unit }:{
     unit:IComponentUnit
   })=>{
@@ -89,6 +82,10 @@ registerConfig.register({
         
       </PropsEditBox>
     )
+  },
+  logicList:{
+    "onMounted":"初始化",
+    "onUpdate":"更新时"
   }
 })
 
@@ -110,7 +107,10 @@ registerConfig.register({
     <PropsEditBox>
       
     </PropsEditBox>
-  )
+  ),
+  logicList:{
+    "onMounted":"初始化"
+  }
 })
 
 registerConfig.register({
@@ -131,7 +131,10 @@ registerConfig.register({
     <PropsEditBox>
 
     </PropsEditBox>
-  )
+  ),
+  logicList:{
+    "onMounted":"初始化"
+  }
 })
 
 registerConfig.register({
@@ -153,6 +156,9 @@ registerConfig.register({
     <PropsEditBox>
       
     </PropsEditBox>
-  )
+  ),
+  logicList:{
+    "onMounted":"初始化"
+  }
 })
 

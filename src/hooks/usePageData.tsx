@@ -1,4 +1,4 @@
-import type { IBasicComponent, IComponentUnit, IPageData,  } from "@/interface";
+import type { IBasicComponent, IComponentUnit, ILogicItem, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
 
 
@@ -35,7 +35,8 @@ const pageData = ref<IPageData>({
       left:100,
       zIndex:1
     }
-  },]
+  },],
+  logics:{}
 });
 function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}){
   pageData.value.components.forEach((unit:IComponentUnit)=>{
@@ -61,6 +62,21 @@ function setPropsById(id:string,props:any){
         }
       }else{
         unit.props = props;
+      }
+    }
+  })
+}
+function setLogicById(id:string,logicName:string,logicItem:ILogicItem){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    if(unit.id === id){
+      if(pageData.value.logics[id]){
+        const targetLogics = pageData.value.logics[id];
+        targetLogics[logicName] = logicItem;
+      }else{
+        const logic = {
+          [logicName]:logicItem
+        }
+        pageData.value.logics[id] = logic
       }
     }
   })
@@ -213,5 +229,6 @@ export default function(){
 
     setWidthAndHeight,
     setPropsById,
+    setLogicById,
   }
 }

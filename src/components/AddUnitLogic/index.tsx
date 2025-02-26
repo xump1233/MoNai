@@ -1,5 +1,7 @@
-import { defineComponent,PropType,watch } from "vue";
+import { defineComponent,PropType,ref,nextTick } from "vue";
 import "./index.less"
+import { registerConfig as config } from "@/hooks/useEditorConfig";
+import usePageData from "@/hooks/usePageData";
 
 import CodeEditor from "../CodeEditor";
 import { 
@@ -12,7 +14,7 @@ import {
   NInput,
   NSelect,
 } from "naive-ui"
-import { IComponentUnit } from "@/interface";
+import { IComponentUnit, ILogicItem } from "@/interface";
 
 
 
@@ -29,9 +31,11 @@ export default defineComponent({
     }
   },
   setup(props){
-    watch(()=>props.unit,()=>{
-      console.log(props.unit)
-    })
+    const { pageData,setLogicById } = usePageData();
+
+    const curLogicMap = ref<Record<string,ILogicItem>>({});
+
+
     return ()=>(
       <NModal
         to={"body"}
@@ -42,8 +46,8 @@ export default defineComponent({
       >
         <NCard
           style={{
-            width:"700px",
-            height:"500px"
+            width:"800px",
+            height:"600px"
           }}
           title={"为组件添加逻辑"}
           contentStyle={{
@@ -64,28 +68,83 @@ export default defineComponent({
         >
           <div style={{width:"100%",height:"100%"}}>
             <NTabs style={{width:"100%",height:"100%"}} type="card" placement="left">
-              <NTabPane 
-                name="初始化" 
-                style={{display:"flex",flexDirection:"column"}}
-              >
-                <NDynamicInput
-                  style={{
-                    marginBottom:"10px"
-                  }}
-                >
-                  <div style="display: flex; align-items: center; width: 100%">
-                    <NInput style={{width:"35%"}} placeholder={"变量名"}></NInput>
-                    <NSelect placeholder={"请选择变量"}></NSelect>
-                  </div>
-                </NDynamicInput>
-                <CodeEditor style={{flex:1}}></CodeEditor>
-              </NTabPane>
-              <NTabPane name="卸载前">
-                
-              </NTabPane>
-              <NTabPane name="更新时">
-                
-              </NTabPane>
+              {props.unit && (()=>{
+                const schemaLogic = pageData.value.logics[props.unit.id];
+                const component = config.componentMap[props.unit.name];
+                const logics = [];
+                for(let key in component.logicList){
+                  let varList:{name:string,value:string}[] = [];
+                  let initCode:string = '';
+                  if(schemaLogic && schemaLogic[key]){
+                    varList = schemaLogic[key].varList;
+                    initCode = schemaLogic[key].code;
+                  }
+                  curLogicMap.value[key] = {
+                    varList,
+                    code:initCode,
+                  }
+                  
+
+                  logics.push((
+                    <NTabPane 
+                      name={component.logicList[key]} 
+                      style={{display:"flex",flexDirection:"column"}}
+                    >
+                      <NDynamicInput
+                        value={curLogicMap.value[key].varList}
+                        style={{
+                          marginBottom:"10px"
+                        }}
+                        onCreate={(_)=>{
+                          curLogicMap.value[key].varList.push({name:'',value:''});
+                          nextTick(()=>{
+                            setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                          })
+                        }}
+                        onRemove={(index:number)=>{
+                          curLogicMap.value[key].varList = curLogicMap.value[key].varList.filter((_,i:number)=>{
+                            return i !== index
+                          })
+                          nextTick(()=>{
+                            setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                          })
+                        }}
+                        v-slots={{
+                          "create-button-default":()=>{
+                            return <div>添加变量</div>
+                          },
+                          "default":(item:{value:{name:string,value:string},index:number})=>{
+                            return (
+                              <div style={{display: "flex", alignItems: "center", width: "100%"}}>
+                                <NInput value={item.value.name} onUpdate:value={(value:string)=>{
+                                  item.value.name = value
+                                  nextTick(()=>{
+                                    setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                                  })
+                                }} style={{width:"35%"}} placeholder={"变量名"}></NInput>
+                                <NSelect value={item.value.value} onUpdate:value={(value)=>{
+                                  item.value.value = value
+                                  nextTick(()=>{
+                                    setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                                  })
+                                }} placeholder={"请选择变量"}></NSelect>
+                              </div>
+                            )
+                          }
+                        }}
+                      >
+                      </NDynamicInput>
+                      <CodeEditor style={{flex:1}} initCode={curLogicMap.value[key].code} onUpdate={(code:string)=>{
+                          curLogicMap.value[key].code = code;
+                          nextTick(()=>{
+                            setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                          })
+                      }}></CodeEditor>
+                    </NTabPane>
+                  ))
+                }
+                return logics
+              })()}
             </NTabs>
           </div>
         </NCard>

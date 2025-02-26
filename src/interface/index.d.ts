@@ -9,7 +9,8 @@ interface IBasicComponent {
   preview:(props?:any)=>any;
   render:(props?:any)=>any;
   props:any,
-  editProps:any
+  editProps:any,
+  logicList:any,
 }
 
 interface IComponentUnit {
@@ -33,11 +34,11 @@ interface IPageData {
     currentReta:number,
   },
   components:IComponentUnit[],
-  logics?:Record<string,ILogicItem>
+  logics:Record<string,Record<string,ILogicItem>>
 }
 
 interface ILogicItem {
-  varList:string[],
+  varList:{name:string,value:string}[],
   code:string,
 }
 

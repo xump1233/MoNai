@@ -1,9 +1,11 @@
-import { defineComponent, onMounted, ref, PropType } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 import loader from '@monaco-editor/loader';
 import IDLE from "monaco-themes/themes/IDLE.json"
 
 import throttle from "@/utils/throttle";
+
+import { NSpin } from "naive-ui"
 
 export default defineComponent({
   props:{
@@ -20,6 +22,7 @@ export default defineComponent({
   setup(props){
     const editorContainer = ref<HTMLElement>();
     let monacoInstance:any;
+    const spinIsShow = ref<boolean>(true);
 
     function getValue(){
       console.log(monacoInstance.getValue())
@@ -36,6 +39,7 @@ export default defineComponent({
     })
     onMounted(()=>{
       loader.init().then((monaco) =>{
+        spinIsShow.value = false;
         if(editorContainer.value){
           monacoInstance = monaco.editor.create(editorContainer.value,{
             value:props.initCode || "// 从下方编写你的代码",
@@ -54,12 +58,21 @@ export default defineComponent({
       
     })
     return ()=>(
-      <>
-      <div 
-        ref={editorContainer}
+      <NSpin 
         style={props.style && {...props.style}}
-      ></div>
-      </>
+        show={spinIsShow.value}
+        v-slots={{
+          description:()=><div>编辑器加载中。。。</div>
+        }}
+        contentStyle={{
+          width:"100%",height:"100%"
+        }}
+      >
+        <div 
+          ref={editorContainer}
+          style={{width:"100%",height:"100%"}}
+        ></div>
+      </NSpin>
     )
   }
 })
