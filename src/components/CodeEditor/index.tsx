@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, PropType } from "vue";
 
 import loader from '@monaco-editor/loader';
 import IDLE from "monaco-themes/themes/IDLE.json"
@@ -7,11 +7,8 @@ import throttle from "@/utils/throttle";
 
 export default defineComponent({
   props:{
-    width:{
-      type:Number
-    },
-    height:{
-      type:Number
+    style:{
+      type:Object
     },
     initCode:{
       type:String
@@ -32,6 +29,11 @@ export default defineComponent({
       onUpdate = throttle(props.onUpdate,500);
     }
 
+    loader.config({
+      paths:{
+        vs:"https://cdn.bootcdn.net/ajax/libs/monaco-editor/0.52.2/min/vs"
+      }
+    })
     onMounted(()=>{
       loader.init().then((monaco) =>{
         if(editorContainer.value){
@@ -55,15 +57,8 @@ export default defineComponent({
       <>
       <div 
         ref={editorContainer}
-        style={{
-          width:(props.width || 500) + "px",
-          height:(props.height || 500) + "px"
-        }}
+        style={props.style && {...props.style}}
       ></div>
-      <button onClick={()=>{
-        console.log("get")
-        getValue();
-      }}>点击</button>
       </>
     )
   }

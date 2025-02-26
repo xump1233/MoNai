@@ -1,10 +1,16 @@
-import type { IBasicComponent } from "@/interface"
+import type { IBasicComponent, IComponentUnit } from "@/interface"
 
 import PreviewBox from "@/components/PreviewBox";
+import PropsEditBox from "@/components/PropsEditBox";
 import { 
   NButton,
   NInput,
+  NInputNumber,
 } from "naive-ui"
+
+import usePageData from "./usePageData";
+
+const { setPropsById } = usePageData();
 
 function createEditorConfig(){
   const componentList:IBasicComponent[] = [];
@@ -34,18 +40,56 @@ registerConfig.register({
       <div>文本</div>
     </PreviewBox>
   ),
-  render:()=><div>默认文本</div>,
+  render:(props)=>{
+    return <div style={{
+      fontSize:props.fontSize + "px",
+      color:props.color
+    }}
+    >{props.value || "默认文本"}</div>
+  },
   props:{
     defaultValue:"",
     fontSize:"",
-    color:""
+    color:"",
+    width:0,
+    height:0  
   },
-  editProps:()=>(
-    <div>
+  editProps:({ unit }:{
+    unit:IComponentUnit
+  })=>{
 
-      
-    </div>
-  )
+    return (
+      <PropsEditBox>
+        <div class="props-item">
+          <div class="props-item-label">默认文本：</div>
+          <div class="props-item-content">
+            <NInput placeholder={"请输入文本内容"} value={unit.props?.value} onUpdate:value={(value:string)=>{
+              setPropsById(unit.id,{value:value})
+            }}></NInput>
+          </div>
+        </div>
+        <div class="props-item">
+          <div class="props-item-label">字体大小：</div>
+          <div class="props-item-content">
+            <NInputNumber placeholder="字体大小" value={unit.props?.fontSize} onUpdate:value={(value:number | null)=>{
+              if(value){
+                setPropsById(unit.id,{fontSize:value});
+              }
+            }}></NInputNumber>
+          </div>
+        </div>
+        <div class="props-item">
+          <div class="props-item-label">字体颜色：</div>
+          <div class="props-item-content">
+            <input type="color" value={unit.props?.color} onInput={(e:Event)=>{
+              setPropsById(unit.id,{color:(e.target as HTMLInputElement).value})
+            }}></input>
+          </div>
+        </div>
+        
+      </PropsEditBox>
+    )
+  }
 })
 
 registerConfig.register({
@@ -63,9 +107,9 @@ registerConfig.register({
 
   },
   editProps:()=>(
-    <div>
+    <PropsEditBox>
       
-    </div>
+    </PropsEditBox>
   )
 })
 
@@ -84,9 +128,9 @@ registerConfig.register({
 
   },
   editProps:()=>(
-    <div>
+    <PropsEditBox>
 
-    </div>
+    </PropsEditBox>
   )
 })
 
@@ -106,9 +150,9 @@ registerConfig.register({
 
   },
   editProps:()=>(
-    <div>
+    <PropsEditBox>
       
-    </div>
+    </PropsEditBox>
   )
 })
 

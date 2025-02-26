@@ -38,7 +38,7 @@ export default defineComponent({
           }}
           ref={unitRef}
         >
-          <RenderComponent size={targetComponent && {width:targetComponent.defaultWidth,height:targetComponent.defaultHeight}}></RenderComponent>
+          <RenderComponent size={targetComponent && {width:targetComponent.defaultWidth,height:targetComponent.defaultHeight}} {...props.unit.props}></RenderComponent>
         </div>
       );
     }

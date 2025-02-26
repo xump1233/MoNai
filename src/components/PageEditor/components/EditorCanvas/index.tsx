@@ -1,7 +1,8 @@
-import { defineComponent,ref,onMounted,onUnmounted  } from "vue";
+import { defineComponent,ref,onMounted,onUnmounted,Ref  } from "vue";
 import type { IComponentUnit } from "@/interface";
 import RenderUnit from "./components/RenderUnit";
 import ContextMenu from "@/components/ContextMenu/index.vue"
+import AddUnitLogic from "@/components/AddUnitLogic";
 import "./index.less"
 
 
@@ -75,7 +76,7 @@ export default defineComponent({
         });
       }
       window.addEventListener("keydown",(e)=>{
-        if(e.code === "Space"){
+        if(e.code === "Space" && !logicShow.value){
           e.preventDefault();
           moveContainer.value?.classList.add("grab");
           isKeySpace.value = true;
@@ -104,9 +105,18 @@ export default defineComponent({
       label:"置于顶层",
       name:"toTop"
     }]);
-
+    
+    const logicShow = ref(false);
+    const logicUnit = ref<IComponentUnit>();
     return ()=>(
       <div class="page-editor-canvas-container unselectable" ref={scrollContainer}>
+        <AddUnitLogic
+          show={logicShow.value}
+          onClose={()=>{
+            logicShow.value = false;
+          }}
+          unit={logicUnit.value}
+        ></AddUnitLogic>
         <div class="canvas-content" style={canvasSize} ref={moveContainer} onMousedown={(e)=>{
           unFocusAllUnit();
           mouseDown(e);
@@ -116,6 +126,10 @@ export default defineComponent({
             return (
               <ContextMenu list={menuList.value} onSelect={(label:string)=>{
                 console.log(label)
+                if(label === "添加逻辑"){
+                  logicUnit.value = unit;
+                  logicShow.value = true;
+                }
               }}>
                 <RenderUnit unit={unit} key={unit.id}></RenderUnit>
               </ContextMenu>

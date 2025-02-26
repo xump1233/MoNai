@@ -1,4 +1,4 @@
-import type { IBasicComponent, IComponentUnit, IPageData } from "@/interface";
+import type { IBasicComponent, IComponentUnit, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
 
 
@@ -47,6 +47,20 @@ function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}
         }
       }else{
         unit.props = widthAndHeight;
+      }
+    }
+  })
+}
+function setPropsById(id:string,props:any){
+  pageData.value.components.forEach((unit:IComponentUnit)=>{
+    if(unit.id === id){
+      if(unit.props){
+        unit.props = {
+          ...unit.props,
+          ...props,
+        }
+      }else{
+        unit.props = props;
       }
     }
   })
@@ -181,7 +195,6 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
 export default function(){
   return {
     pageData,
-    setWidthAndHeight,
     pushComponent,
     componentOver,
     componentLeave,
@@ -197,5 +210,8 @@ export default function(){
     moveUnitList,
     lines,
     setLines,
+
+    setWidthAndHeight,
+    setPropsById,
   }
 }

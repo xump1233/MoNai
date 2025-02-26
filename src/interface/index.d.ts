@@ -32,7 +32,13 @@ interface IPageData {
     height:number | string,
     currentReta:number,
   },
-  components:IComponentUnit[]
+  components:IComponentUnit[],
+  logics?:Record<string,ILogicItem>
+}
+
+interface ILogicItem {
+  varList:string[],
+  code:string,
 }
 
 interface IBottomBarItem {
@@ -53,4 +59,5 @@ export {
   IComponentUnit,
   IPageData,
   IBottomBarItem,
+  ILogicItem,
 }
