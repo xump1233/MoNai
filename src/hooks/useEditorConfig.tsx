@@ -14,6 +14,7 @@ import usePageData from "./usePageData";
 
 const { setPropsById } = usePageData();
 
+
 function createEditorConfig(){
   const componentList:IBasicComponent[] = [];
   const componentMap:Record<string,IBasicComponent> = {};
@@ -47,6 +48,10 @@ registerConfig.register({
     return <BasicText {...props} />
   },
   props:{},
+  contextProps:[{
+    name:"value",
+    description:"文本内容"
+  }],
   editProps:({ unit }:{
     unit:IComponentUnit
   })=>{
@@ -57,7 +62,7 @@ registerConfig.register({
           <div class="props-item-label">默认文本：</div>
           <div class="props-item-content">
             <NInput placeholder={"请输入文本内容"} value={unit.props?.value} onUpdate:value={(value:string)=>{
-              setPropsById(unit.id,{value:value})
+              setPropsById(unit.id,{value:value});
             }}></NInput>
           </div>
         </div>

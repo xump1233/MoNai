@@ -13,6 +13,7 @@ import {
   NDynamicInput,
   NInput,
   NSelect,
+  NTag,
 } from "naive-ui"
 import { IComponentUnit, ILogicItem } from "@/interface";
 
@@ -34,7 +35,6 @@ export default defineComponent({
     const { pageData,setLogicById } = usePageData();
 
     const curLogicMap = ref<Record<string,ILogicItem>>({});
-
 
     return ()=>(
       <NModal
@@ -72,6 +72,12 @@ export default defineComponent({
                 const schemaLogic = pageData.value.logics[props.unit.id];
                 const component = config.componentMap[props.unit.name];
                 const logics = [];
+                const options = pageData.value.components.map((u:IComponentUnit)=>{
+                  return {
+                    label:u.name,
+                    value:u.id,
+                  }
+                })
                 for(let key in component.logicList){
                   let varList:{name:string,value:string}[] = [];
                   let initCode:string = '';
@@ -114,6 +120,7 @@ export default defineComponent({
                             return <div>添加变量</div>
                           },
                           "default":(item:{value:{name:string,value:string},index:number})=>{
+                            
                             return (
                               <div style={{display: "flex", alignItems: "center", width: "100%"}}>
                                 <NInput value={item.value.name} onUpdate:value={(value:string)=>{
@@ -122,10 +129,28 @@ export default defineComponent({
                                     setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
                                   })
                                 }} style={{width:"35%"}} placeholder={"变量名"}></NInput>
-                                <NSelect value={item.value.value} onUpdate:value={(value)=>{
-                                  item.value.value = value
-                                  nextTick(()=>{
-                                    setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
+                                <NSelect 
+                                  value={item.value.value} 
+                                  options={options}
+                                  renderLabel={(item:{label:string,value:string})=>{
+                                    
+                                    return <div style={{display:"flex"}}>
+                                      {item.label === "" ?
+                                        <>
+                                          <div>请选择变量</div>
+                                        </> :
+                                        <>
+                                          <NTag type="success">{config.componentMap[item.label].label}</NTag>
+                                          <div style={{marginLeft:"10px"}}>{item.value}</div>
+                                        </>
+                                      }
+                                      
+                                    </div>
+                                  }} 
+                                  onUpdate:value={(value)=>{
+                                    item.value.value = value
+                                    nextTick(()=>{
+                                      setLogicById(props.unit?.id as string,key,curLogicMap.value[key])
                                   })
                                 }} placeholder={"请选择变量"}></NSelect>
                               </div>

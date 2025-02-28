@@ -96,18 +96,30 @@ export default defineComponent({
             }}
           >
             <NTabPane name="表单" class={"store-nav-item"}>
-              {componentList && componentList.map((item:IBasicComponent)=>{
-                const Render = item.preview;
-                return (
-                  <div
-                    class="store-item"
-                    draggable="true"
-                    onDragstart={(e)=>dragStart(e,item)}
-                  >
-                    <Render></Render>
-                  </div>
-                )
-              })}
+              {componentList && (()=>{
+                let LastRender = ()=><div></div>;
+                const result = componentList.map((item:IBasicComponent)=>{
+                  const Render = item.preview;
+                  LastRender = Render;
+                  return (
+                    <div
+                      class="store-item"
+                      draggable="true"
+                      onDragstart={(e)=>dragStart(e,item)}
+                    >
+                      <Render></Render>
+                    </div>
+                  )
+                })
+                if(result.length % 2 !== 0){
+                  result.push(
+                    <div class={"store-item"} style={{opacity:0}}>
+                      <LastRender></LastRender>
+                    </div>
+                  )
+                }
+                return result
+              })()}
             </NTabPane>
             <NTabPane name="海报">
 

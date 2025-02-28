@@ -9,6 +9,7 @@ interface IBasicComponent {
   preview:(props?:any)=>any;
   render:(props?:any)=>any;
   props:any,
+  contextProps?:[{name:string,description:string}]
   editProps:any,
   logicList:any,
 }
