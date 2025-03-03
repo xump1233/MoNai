@@ -20,9 +20,9 @@ interface IComponentUnit {
   type:string;
   props?:Record<string,any>;
   position:{
-    top:number | string;
-    left:number | string;
-    zIndex:number | string;
+    top:number;
+    left:number;
+    zIndex:number;
   }
   temporaryTarget?:string;
   isMoveFocus?:boolean;

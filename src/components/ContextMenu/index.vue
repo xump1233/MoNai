@@ -63,23 +63,22 @@ watchEffect(()=>{
 }
 .context-menu{
     position: fixed;
-    background-color: #bff;
-    padding: 10px;
-    min-width: 100px;
+    background-color: rgb(234, 253, 253);
+    min-width: 150px;
     width: auto;
-    border-radius: 5px;
+    border-radius: 3px;
     z-index: 2005;
+    box-shadow: 1px 2px 3px 3px #00000012
 }
 .context-menu .context-menu-item{
-    padding:5px 3px;
+    padding:5px;
     padding-right: 20px;
-    border-radius: 5px;
     cursor: pointer;
     width: auto;
     font-size: 16px;
     white-space: nowrap;
 }
 .context-menu .context-menu-item:hover{
-    background-color: #f99;
+    background-color: rgba(210, 210, 210, 0.232);
 }
 </style>

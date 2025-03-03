@@ -13,7 +13,7 @@ export default defineComponent({
     return ()=>(
       <div class="page-editor-operate-bar" onClick={()=>{
         console.log(JSON.stringify(pageData.value,null,2))
-      }}>OperateBar</div>
+      }}>保留区域</div>
     )
   }
 })

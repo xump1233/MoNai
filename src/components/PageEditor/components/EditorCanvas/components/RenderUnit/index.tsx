@@ -1,4 +1,4 @@
-import { defineComponent, PropType, ref, onMounted } from "vue";
+import { defineComponent, PropType, ref, onMounted, onUpdated } from "vue";
 import type { IComponentUnit } from "@/interface";
 import { registerConfig as config } from "@/hooks/useEditorConfig";
 import "./index.less"
@@ -23,6 +23,15 @@ export default defineComponent({
       if(unitRef.value){
         unitRef.value.addEventListener("mousedown",mouseDown);
         const { offsetWidth,offsetHeight } = unitRef.value;
+        setWidthAndHeight(props.unit.id,{width:offsetWidth,height:offsetHeight});
+      }
+    })
+    onUpdated(()=>{
+      if(unitRef.value){
+        const { offsetWidth,offsetHeight } = unitRef.value;
+        if(props.unit.props && (props.unit.props.width === offsetWidth && props.unit.props.height === offsetHeight)){
+          return
+        }
         setWidthAndHeight(props.unit.id,{width:offsetWidth,height:offsetHeight});
       }
     })

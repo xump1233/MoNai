@@ -55,7 +55,6 @@ registerConfig.register({
   editProps:({ unit }:{
     unit:IComponentUnit
   })=>{
-
     return (
       <PropsEditBox>
         <div class="props-item">
@@ -79,7 +78,7 @@ registerConfig.register({
         <div class="props-item">
           <div class="props-item-label">字体颜色：</div>
           <div class="props-item-content">
-            <input type="color" value={unit.props?.color} onInput={(e:Event)=>{
+            <input type="color" value={unit.props?.color || "#000000"} onInput={(e:Event)=>{
               setPropsById(unit.id,{color:(e.target as HTMLInputElement).value})
             }}></input>
           </div>

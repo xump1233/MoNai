@@ -15,7 +15,7 @@ const pageData = ref<IPageData>({
     position:{
       top:30,
       left:30,
-      zIndex:1
+      zIndex:33
     }
   },{
     name:'text',
@@ -24,7 +24,7 @@ const pageData = ref<IPageData>({
     position:{
       top:300,
       left:300,
-      zIndex:1
+      zIndex:33
     }
   },{
     name:'button',
@@ -33,7 +33,7 @@ const pageData = ref<IPageData>({
     position:{
       top:400,
       left:100,
-      zIndex:1
+      zIndex:33
     }
   },],
   logics:{}
@@ -80,6 +80,39 @@ function setLogicById(id:string,logicName:string,logicItem:ILogicItem){
       }
     }
   })
+}
+function zIndexMoveUpAndDown(id:string,op:"up" | "down"){
+  const { unit } = findUnit(id);
+  if(unit){
+    const { top,left,zIndex } = unit.position;
+    const { width,height } = unit.props as {width:number,height:number}; 
+    let minGup = Number.MAX_VALUE;
+    pageData.value.components.forEach((item:IComponentUnit)=>{
+      if(item.id === unit.id){
+        return
+      }
+      const {top:cTop,left:cLeft,zIndex:CZIndex} = item.position;
+      const { width:CWidth,height:CHeight } = item.props as {width:number,height:number};
+      const judgeX = (( cLeft >= left && cLeft <= left + width) || (cLeft + CWidth >= left && cLeft+CWidth <= left + width));
+      const judgeY = (( cTop >= top  && cTop <= top + height) || (cTop+CHeight >= top  && cTop+CHeight <= top + height));
+      if(judgeX || judgeY){
+        if(op === "up" && CZIndex >= zIndex && CZIndex-zIndex<minGup){
+          minGup = CZIndex-zIndex;
+        }else if(op === "down" && CZIndex <= zIndex && zIndex-CZIndex<minGup){
+          minGup = zIndex - CZIndex;
+        }
+      }
+    })
+    if(minGup !== Number.MAX_VALUE){
+      unit.position = {
+        ...unit.position,
+        zIndex:zIndex + (op === "up" ? 1+minGup : -1-minGup)
+      }
+    }
+  }
+}
+function removeComponent(id:string){
+  pageData.value.components = pageData.value.components.filter((i:IComponentUnit)=>i.id !== id)
 }
 
 
@@ -230,5 +263,7 @@ export default function(){
     setWidthAndHeight,
     setPropsById,
     setLogicById,
+    zIndexMoveUpAndDown,
+    removeComponent,
   }
 }

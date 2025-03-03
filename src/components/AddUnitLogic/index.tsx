@@ -14,6 +14,7 @@ import {
   NInput,
   NSelect,
   NTag,
+  NPopover,
 } from "naive-ui"
 import { IComponentUnit, ILogicItem } from "@/interface";
 
@@ -140,8 +141,32 @@ export default defineComponent({
                                           <div>请选择变量</div>
                                         </> :
                                         <>
-                                          <NTag type="success">{config.componentMap[item.label].label}</NTag>
-                                          <div style={{marginLeft:"10px"}}>{item.value}</div>
+                                          <NPopover
+                                            trigger="hover"
+                                            v-slots={{
+                                              trigger:()=>(
+                                              <div style={{display:"flex"}}>
+                                                <NTag type="success">{config.componentMap[item.label].label}</NTag>
+                                                <div style={{marginLeft:"10px"}}>{item.value}</div>
+                                              </div>
+                                              ),
+                                        
+                                            }}
+                                            disabled={!(config.componentMap[item.label].contextProps)}
+                                            
+                                          >
+                                            {config.componentMap[item.label].contextProps && (
+                                              <div>
+                                                <div>该元素所含属性：</div>
+                                                {config.componentMap[item.label].contextProps?.map((v:{name:string,description:string})=>{
+                                                  return <div>
+                                                    <div>{v.name}:{v.description}</div>
+                                                  </div>
+                                                })}
+                                              </div>
+                                            )}
+                                           
+                                          </NPopover>
                                         </>
                                       }
                                       

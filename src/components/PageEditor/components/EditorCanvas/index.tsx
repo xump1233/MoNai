@@ -24,7 +24,7 @@ export default defineComponent({
     const isKeySpace = ref<boolean>(false);
 
     const { setCanvas,dragState } = useDrag();
-    const { pageData,unFocusAllUnit,lines,moveFocusUnit } = usePageData();
+    const { pageData,unFocusAllUnit,lines,moveFocusUnit,zIndexMoveUpAndDown,removeComponent } = usePageData();
     const { mouseDown,selectMaskStyle } = useSelectFocus({isKeySpace:isKeySpace});
     const { setElements,moveCanvasDown } = useMoveCanvas({isKeySpace})
     
@@ -93,6 +93,9 @@ export default defineComponent({
       label:"添加逻辑",
       name:"addLogic"
     },{
+      label:"删除组件",
+      name:"removeCom"
+    },{
       label:"上移一层",
       name:"moveUp"
     },{
@@ -129,6 +132,12 @@ export default defineComponent({
                 if(label === "添加逻辑"){
                   logicUnit.value = unit;
                   logicShow.value = true;
+                }else if(label === "上移一层"){
+                  zIndexMoveUpAndDown(unit.id,"up");
+                }else if(label === "下移一层"){
+                  zIndexMoveUpAndDown(unit.id,"down");
+                }else if(label === "删除组件"){
+                  removeComponent(unit.id);
                 }
               }}>
                 <RenderUnit unit={unit} key={unit.id}></RenderUnit>
