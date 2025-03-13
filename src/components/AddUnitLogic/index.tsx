@@ -77,6 +77,7 @@ export default defineComponent({
                   return {
                     label:u.name,
                     value:u.id,
+                    alias:u.alias,
                   }
                 })
                 for(let key in component.logicList){
@@ -133,7 +134,7 @@ export default defineComponent({
                                 <NSelect 
                                   value={item.value.value} 
                                   options={options}
-                                  renderLabel={(item:{label:string,value:string})=>{
+                                  renderLabel={(item:{label:string,value:string,alias?:string})=>{
                                     
                                     return <div style={{display:"flex"}}>
                                       {item.label === "" ?
@@ -145,9 +146,9 @@ export default defineComponent({
                                             trigger="hover"
                                             v-slots={{
                                               trigger:()=>(
-                                              <div style={{display:"flex"}}>
+                                              <div style={{display:"flex",alignItems:"center"}}>
                                                 <NTag type="success">{config.componentMap[item.label].label}</NTag>
-                                                <div style={{marginLeft:"10px"}}>{item.value}</div>
+                                                <div style={{marginLeft:"10px"}}>{item.alias || item.value}</div>
                                               </div>
                                               ),
                                         

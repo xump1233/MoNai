@@ -12,7 +12,6 @@ export default defineComponent({
   setup(){
 
     const { barList,removeItem } = useSchedule();
-    console.log("render")
     return ()=>(
       <div class="page-editor-bottom-bar">
         <div class="nav-container">

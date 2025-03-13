@@ -1,5 +1,8 @@
 import type { IBasicComponent, IComponentUnit, ILogicItem, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
+import { postRequest } from "@/request";
+
+
 
 
 const pageData = ref<IPageData>({
@@ -38,6 +41,24 @@ const pageData = ref<IPageData>({
   },],
   logics:{}
 });
+
+function savePageData(success?:Function,error?:Function){
+  const head = new Headers();
+  head.append("Content-Type","application/json");
+  postRequest("/static/setPageContent",{
+    method:"post",
+    body:JSON.stringify(pageData.value),
+    headers:head
+  }).then(value=>{
+    if(value.status === 200){
+      success && success();
+    }else{
+      error && error();
+    }
+  })
+  console.log(JSON.stringify(pageData.value,null,2))
+}
+
 function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}){
   pageData.value.components.forEach((unit:IComponentUnit)=>{
     if(unit.id === id){
@@ -244,6 +265,7 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
 export default function(){
   return {
     pageData,
+    savePageData,
     pushComponent,
     componentOver,
     componentLeave,

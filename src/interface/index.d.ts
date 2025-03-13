@@ -8,8 +8,8 @@ interface IBasicComponent {
   defaultHeight:number;
   preview:(props?:any)=>any;
   render:(props?:any)=>any;
-  props:any,
-  contextProps?:[{name:string,description:string}]
+  props?:any,
+  contextProps?:{name:string,description:string}[]
   editProps:any,
   logicList:any,
 }
@@ -18,6 +18,7 @@ interface IComponentUnit {
   name:string;
   id:string;
   type:string;
+  alias?:string;
   props?:Record<string,any>;
   position:{
     top:number;

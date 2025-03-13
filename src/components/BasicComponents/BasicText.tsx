@@ -14,6 +14,9 @@ export default defineComponent({
     },
     onMounted:{
       type:Function
+    },
+    onClick:{
+      type:Function
     }
   },
   setup(props){
@@ -22,10 +25,14 @@ export default defineComponent({
     })
 
     return ()=>(
-      <div style={{
-        fontSize:props.fontSize + "px",
-        color:props.color
-      }}
+      <div
+        style={{
+          fontSize:props.fontSize + "px",
+          color:props.color
+        }}
+        onClick={()=>{
+          typeof props.onClick === "function" && props.onClick();
+        }}
       >{props.value || "默认文本"}</div>
     )
   }
