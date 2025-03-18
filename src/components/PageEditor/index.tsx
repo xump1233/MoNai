@@ -8,12 +8,15 @@ import PropsEditor from "./components/PropsEditor";
 import BottomBar from "./components/BottomBar";
 
 import useCommend from "@/hooks/useCommend";
+import usePageData from "@/hooks/usePageData";
 
 export default defineComponent({
   props:{
 
   },
   setup(){
+    const { getPageData } = usePageData();
+    getPageData();
     useCommend();
     return ()=>(
       <div class="page-editor">

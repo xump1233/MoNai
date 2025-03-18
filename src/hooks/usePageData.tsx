@@ -1,6 +1,7 @@
 import type { IBasicComponent, IComponentUnit, ILogicItem, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
-import { postRequest } from "@/request";
+import { postRequest,getRequest } from "@/request";
+import getSearch from "@/utils/getSearch";
 
 
 
@@ -58,7 +59,14 @@ function savePageData(success?:Function,error?:Function){
   })
   console.log(JSON.stringify(pageData.value,null,2))
 }
-
+function getPageData(){
+  const { pageId } = getSearch();
+  getRequest("/static/pageContent").then((res)=>{
+    return res.text();
+  }).then((value)=>{
+    pageData.value = JSON.parse(value)
+  })
+}
 function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}){
   pageData.value.components.forEach((unit:IComponentUnit)=>{
     if(unit.id === id){
@@ -265,6 +273,7 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
 export default function(){
   return {
     pageData,
+    getPageData,
     savePageData,
     pushComponent,
     componentOver,

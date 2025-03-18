@@ -22,7 +22,7 @@ function dragEnter(e:DragEvent){
   componentOver(dragComponent.value as IBasicComponent,{
     top:e.offsetY,
     left:e.offsetX,
-    zIndex:22
+    zIndex:1000
   })
 }
 function dragOver(e:DragEvent){
@@ -30,7 +30,7 @@ function dragOver(e:DragEvent){
   componentOver(dragComponent.value as IBasicComponent,{
     top:e.offsetY,
     left:e.offsetX,
-    zIndex:22
+    zIndex:1000
   })
 }
 function dragLeave(){
@@ -45,7 +45,7 @@ function drop(e:DragEvent){
       position:{
         top:e.offsetY,
         left:e.offsetX,
-        zIndex:33
+        zIndex:50
       }
     });
   }

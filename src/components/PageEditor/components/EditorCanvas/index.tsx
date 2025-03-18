@@ -1,9 +1,10 @@
-import { defineComponent,ref,onMounted,onUnmounted,Ref  } from "vue";
+import { defineComponent,ref,onMounted,onUnmounted  } from "vue";
 import type { IComponentUnit } from "@/interface";
 import RenderUnit from "./components/RenderUnit";
 import ContextMenu from "@/components/ContextMenu/index.vue"
 import AddUnitLogic from "@/components/AddUnitLogic";
 import "./index.less"
+import { useMessage } from "naive-ui";
 
 
 import usePageData from "@/hooks/usePageData";
@@ -26,7 +27,8 @@ export default defineComponent({
     const { setCanvas,dragState } = useDrag();
     const { pageData,unFocusAllUnit,lines,moveFocusUnit,zIndexMoveUpAndDown,removeComponent } = usePageData();
     const { mouseDown,selectMaskStyle } = useSelectFocus({isKeySpace:isKeySpace});
-    const { setElements,moveCanvasDown } = useMoveCanvas({isKeySpace})
+    const { setElements,moveCanvasDown } = useMoveCanvas({isKeySpace});
+    const message = useMessage();
     
 
     const pageContainer = pageData.value.pageContainer;
@@ -116,6 +118,10 @@ export default defineComponent({
         <AddUnitLogic
           show={logicShow.value}
           onClose={()=>{
+            logicShow.value = false;
+          }}
+          onOk={()=>{
+            message.success("添加成功！！")
             logicShow.value = false;
           }}
           unit={logicUnit.value}

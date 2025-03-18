@@ -28,6 +28,9 @@ export default defineComponent({
     onClose:{
       type:Function
     },
+    onOk:{
+      type:Function
+    },
     unit:{
       type:Object as PropType<IComponentUnit | undefined>
     }
@@ -57,14 +60,18 @@ export default defineComponent({
           }}
           v-slots={{
             "footer":()=><div style={{display:"flex",justifyContent:"flex-end"}}>
-              <NButton type="success" style={{marginRight:"20px"}}>确定</NButton>
+              <NButton type="success" style={{marginRight:"20px"}} onClick={()=>{
+                props.onOk && props.onOk();
+              }}>确定</NButton>
               <NButton type="warning" onClick={()=>{
                 props.onClose && props.onClose();
               }}>关闭</NButton>
             </div>,
             "header-extra":()=><div onClick={()=>{
               props.onClose && props.onClose();
-            }}>x</div>
+            }}>
+              <svg class="icon" style={{cursor:"pointer"}} viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4821" width="16" height="16"><path d="M426.827294 512l-421.647059-421.647059L90.352941 5.180235l421.647059 421.647059 421.647059-421.647059L1018.819765 90.352941l-421.647059 421.647059 421.647059 421.647059L933.647059 1018.819765l-421.647059-421.647059-421.647059 421.647059L5.180235 933.647059l421.647059-421.647059z" fill="#000000" p-id="4822"></path></svg>
+            </div>
           }}
         >
           <div style={{width:"100%",height:"100%"}}>
@@ -134,6 +141,20 @@ export default defineComponent({
                                 <NSelect 
                                   value={item.value.value} 
                                   options={options}
+                                  filterable
+                                  filter={(pattern: string, option: object)=>{
+                                    const Toption = option as {label:string,value:string,alias:string};
+                                    const label = config.componentMap[Toption.label].label || ""
+                                    if(label.indexOf(pattern) !== -1){
+                                      return true;
+                                    }
+                                    for(const key in Toption){
+                                      if((Toption[(key as "label" | "alias" | "value")] || "").indexOf(pattern) !== -1){
+                                        return true
+                                      }
+                                    }
+                                    return false
+                                  }}
                                   renderLabel={(item:{label:string,value:string,alias?:string})=>{
                                     
                                     return <div style={{display:"flex"}}>
