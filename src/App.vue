@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PageContainer from "./components/page-container/index.vue"
-import PageEditor from "./components/PageEditor";
+import { RouterView } from "vue-router"
 import { NMessageProvider } from "naive-ui"
 import "./App.less"
 
@@ -10,7 +10,7 @@ import "./App.less"
 <template>
   <NMessageProvider>
     <PageContainer>
-      <PageEditor/>
+      <RouterView />
     </PageContainer>
   </NMessageProvider>
 </template>

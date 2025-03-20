@@ -50,7 +50,11 @@ watchEffect(()=>{
         <slot></slot>
         <Teleport to="body">
             <div class="context-menu" ref="menu" v-if="info.isVisible">
-                <div class="context-menu-item" v-for="item of list" @click="$attrs.onSelect($event.target.textContent)">{{ item.label }}</div>
+                <div class="context-menu-item" v-for="item of list" @click="$attrs.onSelect($event.target.textContent)">
+                    <div>
+                        {{ item.label }}
+                    </div>
+                </div>
             </div>
         </Teleport>
     </div>
@@ -68,7 +72,8 @@ watchEffect(()=>{
     width: auto;
     border-radius: 3px;
     z-index: 2005;
-    box-shadow: 1px 2px 3px 3px #00000012
+    box-shadow: 1px 2px 3px 3px #00000012;
+    padding:5px
 }
 .context-menu .context-menu-item{
     padding:5px;
@@ -77,6 +82,8 @@ watchEffect(()=>{
     width: auto;
     font-size: 16px;
     white-space: nowrap;
+    border-radius:5px;
+    display: flex;
 }
 .context-menu .context-menu-item:hover{
     background-color: rgba(210, 210, 210, 0.232);

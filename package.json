@@ -14,7 +14,8 @@
     "matter-js": "^0.20.0",
     "monaco-themes": "^0.4.4",
     "pinia": "^2.3.1",
-    "vue": "^3.4.31"
+    "vue": "^3.4.31",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.10",
