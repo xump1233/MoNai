@@ -7,13 +7,12 @@ import PageEditor from "@/components/PageEditor";
 const routes = [{
   path:"/index",
   component:IndexPage,
-  children:[{
-    path:"/index/pageEditor",
-    component:PageEditor,
-  }]
 },{
   path:"/login",
   component:LoginPage
+},{
+  path:"/pageEditor",
+  component:PageEditor,
 }]
 
 const router = createRouter({

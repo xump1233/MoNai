@@ -55,7 +55,7 @@ export default defineComponent({
           StoreState.value === "float" && mouseDown(e);
         }}>
           <div class="top-title">
-            组件集
+            组件市场
           </div>
           <div class="top-operate">
             <ToMinIcon onClick={()=>{
@@ -95,7 +95,7 @@ export default defineComponent({
               color:"#f66"
             }}
           >
-            <NTabPane name="表单" class={"store-nav-item"}>
+            <NTabPane name="保留" class={"store-nav-item"}>
               {componentList && (()=>{
                 let LastRender = ()=><div></div>;
                 const result = componentList.map((item:IBasicComponent)=>{
@@ -121,13 +121,13 @@ export default defineComponent({
                 return result
               })()}
             </NTabPane>
-            <NTabPane name="海报">
+            <NTabPane name="测试">
 
             </NTabPane>
-            <NTabPane name="图表">
+            <NTabPane name="单元">
 
             </NTabPane>
-            <NTabPane name="视频">
+            <NTabPane name="拓展">
 
             </NTabPane>
           </NTabs>
