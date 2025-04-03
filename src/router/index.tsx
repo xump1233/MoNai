@@ -5,14 +5,18 @@ import LoginPage from "@/pages/LoginPage";
 import PageEditor from "@/components/PageEditor";
 
 const routes = [{
-  path:"/index",
-  component:IndexPage,
-},{
-  path:"/login",
-  component:LoginPage
-},{
-  path:"/pageEditor",
-  component:PageEditor,
+  path:"/",
+  redirect: '/login',
+  children:[{
+    path:"/index",
+    component:IndexPage,
+  },{
+    path:"/login",
+    component:LoginPage
+  },{
+    path:"/pageEditor",
+    component:PageEditor,
+  }]
 }]
 
 const router = createRouter({

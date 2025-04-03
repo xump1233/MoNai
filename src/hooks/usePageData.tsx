@@ -1,7 +1,7 @@
 import type { IBasicComponent, IComponentUnit, ILogicItem, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
-import { postRequest,getRequest } from "@/request";
 import getSearch from "@/utils/getSearch";
+import * as Api from "@/api"
 
 
 
@@ -44,14 +44,12 @@ const pageData = ref<IPageData>({
 });
 
 function savePageData(success?:Function,error?:Function){
-  const head = new Headers();
-  head.append("Content-Type","application/json");
-  postRequest("/static/setPageContent",{
-    method:"post",
-    body:JSON.stringify(pageData.value),
-    headers:head
-  }).then(value=>{
-    if(value.status === 200){
+  const { pageId } = getSearch();
+  Api.PAGE.setPageDataByPageId(pageId,{
+    page_json:JSON.stringify(pageData.value),
+    create_time:String(Date.now())
+  }).then(res=>{
+    if(res.success){
       success && success();
     }else{
       error && error();
@@ -61,10 +59,11 @@ function savePageData(success?:Function,error?:Function){
 }
 function getPageData(){
   const { pageId } = getSearch();
-  getRequest("/static/pageContent").then((res)=>{
-    return res.text();
-  }).then((value)=>{
-    pageData.value = JSON.parse(value)
+  Api.PAGE.getPageDataByPageId(pageId).then((res)=>{
+    if(res.success){
+      pageData.value = JSON.parse(res.data["page_json"]);
+      return
+    }
   })
 }
 function setWidthAndHeight(id:string,widthAndHeight:{width:number,height:number}){
