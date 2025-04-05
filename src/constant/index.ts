@@ -4,7 +4,12 @@ const DragState = {
   END:"end",
 } as const
 
+const ERRORMAP = {
+  "Failed to fetch":""
+}
+
 
 export {
   DragState,
+  ERRORMAP,
 }

@@ -73,6 +73,7 @@ const handleInput = (event) => {
     inset: 0;
     color:#999;
     transition: 0.3s all;
+    cursor: pointer;
 }
 .form-item>input:focus ~ .bar{
     width: 100%;

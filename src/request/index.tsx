@@ -1,6 +1,7 @@
 import router from '@/router'
 
 const BASE_URL = "http://127.0.0.1:8080"
+const RENDER_URL = "http://127.0.0.1:5174"
 
 // TODO request
 
@@ -22,6 +23,9 @@ function getRequest(url:string,options?:RequestInit){
       (window as any).message.error("登录信息已失效，请重新登录！")
       router.push("/login")
     }
+  })
+  request.catch(err=>{
+    (window as any).message.error("遇到一个网络错误："+err.message)
   })
   return request
 }
@@ -46,6 +50,9 @@ function postRequest(url:string,options:RequestInit){
       (window as any).message.error("登录信息已失效，请重新登录！")
       router.push("/login")
     }
+  })
+  request.catch(err=>{
+    (window as any).message.error("遇到一个网络错误："+err.message)
   })
   return request
 }
@@ -72,6 +79,8 @@ const requestHeaders = (...args:string[])=>{
 
 
 export {
+  BASE_URL,
+  RENDER_URL,
   getRequest,
   postRequest,
   requestHeaders,

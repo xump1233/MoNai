@@ -128,6 +128,8 @@ const LoginWindow = defineComponent({
                   return
                 }
                 toPassword();
+              }).catch(()=>{
+                loadingBar.error();
               }).finally(()=>{
                 loadingBar.finish();
               })
@@ -151,9 +153,12 @@ const LoginWindow = defineComponent({
                   message.error(res.error);
                   return
                 }
-                setToken("Bearer " + res.token)
+                setToken("Bearer " + res.token);
                 message.success(res.message);
-                router.push("/index")
+                router.push("/index");
+                (window as any).userInfo = {
+                  username:username.value
+                }
               })
             }}>登录</NButton>
           </div>

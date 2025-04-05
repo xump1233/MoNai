@@ -23,6 +23,13 @@ export default defineComponent({
         pageList.value = res.data
       }
     });
+
+    const newPageInfoModal = ref({
+      isShow:false,
+      username:(window as any)?.userInfo?.username || "",
+      pageName:"",
+
+    })
     return ()=>(
       <div class={"index-page-manage"}>
         {pageList.value && pageList.value.map((item:IPageListItem)=>{
@@ -53,15 +60,31 @@ export default defineComponent({
             textAlign:"center"
           }}
         >
-          <div>
+          <div onClick={()=>{
+            newPageInfoModal.value.isShow = true;
+          }}>
             <div style={{fontSize:"50px"}}>+</div>
             <div>创建一个新页面</div>
           </div>
         </NCard>
         <NModal
-          show={false}
+          show={newPageInfoModal.value.isShow}
+          onClose={()=>{
+            newPageInfoModal.value.isShow = false;
+          }}
+          onMaskClick={()=>{
+            newPageInfoModal.value.isShow = false;
+          }}
         >
-
+          <NCard
+            title={"创建一个新页面"}
+            style={{
+              width:"550px",
+              height:"500px"
+            }}
+          >
+            
+          </NCard>
         </NModal>
       </div>
     )
