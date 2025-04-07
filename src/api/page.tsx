@@ -25,8 +25,23 @@ function getPageList(){
   })
 }
 
+function postCreatePage(body:{
+  page_name:string;
+  create_time:string;
+  create_user:string;
+  page_json:string;
+}){
+  return postRequest("/pageStore/createPage",{
+    headers:requestHeaders("json"),
+    body:JSON.stringify(body),
+  }).then(res=>{
+    return res.json();
+  })
+}
+
 export default {
   setPageDataByPageId,
   getPageDataByPageId,
   getPageList,
+  postCreatePage,
 };

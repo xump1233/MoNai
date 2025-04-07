@@ -1,9 +1,17 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import "./index.less";
 
-import { NCard,NModal } from "naive-ui";
+import { 
+  NCard,
+  NModal,
+  NInput,
+  NButton,
+  NSelect,
+  NTooltip,
+} from "naive-ui";
 import * as API from "@/api"
 import { useRouter } from "vue-router";
+import { PageTemplate } from "@/constant"
 
 interface IPageListItem{
   page_id:number;
@@ -15,41 +23,79 @@ interface IPageListItem{
 type IPageList = IPageListItem[]
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup() {
     const router = useRouter();
     const pageList = ref<IPageList>([]);
-    API.PAGE.getPageList().then(res=>{
-      if(res.success){
-        pageList.value = res.data
-      }
-    });
-
+    function getPageList(){
+      API.PAGE.getPageList().then(res=>{
+        if(res.success){
+          pageList.value = res.data
+        }
+      });
+    }
+    getPageList();
+    onMounted(()=>{
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+      newPageInfoModal.value.username = userInfo?.username || "";
+    })
     const newPageInfoModal = ref({
       isShow:false,
       username:(window as any)?.userInfo?.username || "",
       pageName:"",
-
+      createTime:"",
+      template:"null"
     })
+    const templateOptions = [{
+      value:"null",
+      label:"空模板"
+    }]
+
+    function handleCreatePage(){
+      API.PAGE.postCreatePage({
+        page_json:PageTemplate[newPageInfoModal.value.template],
+        page_name:newPageInfoModal.value.pageName,
+        create_user:newPageInfoModal.value.username,
+        create_time:String(Date.now()),
+      }).then(res=>{
+        if(res.success){
+          (window as any).message.success("创建成功！");
+          newPageInfoModal.value.isShow = false;
+          getPageList();
+        }
+      })
+    }
+
     return ()=>(
       <div class={"index-page-manage"}>
         {pageList.value && pageList.value.map((item:IPageListItem)=>{
           return (
-            <NCard 
-              class="page-list-item" 
-              contentStyle={{padding:"10px"}}
+            <NTooltip
+              placement="bottom" trigger="hover"
+              v-slots={{
+                trigger:()=>{
+                  return (
+                    <NCard 
+                      class="page-list-item" 
+                      contentStyle={{padding:"10px"}}
+                    >
+                      <div class="page-item-info" onClick={()=>{
+                        router.push("/pageEditor?pageId="+item.page_id)
+                      }}>
+                        <div class="page-item-info-name">{item.page_name}</div>
+                        <div class="page-item-info-other">
+                          <div style={{width:"100%"}}>页面ID:&emsp;{item.page_id}</div>
+                          <div style={{width:"100%"}}>当前版本:&emsp;{item.page_current_version}</div>
+                          <div style={{width:"100%"}}>创建时间:&emsp;{new Date(Number(item.page_create_time)).toLocaleDateString()}</div>
+                          <div style={{width:"100%"}}>最近修改:&emsp;{new Date(Number(item.page_version_time)).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    </NCard>  
+                  )
+                }
+              }}
             >
-              <div class="page-item-info" onClick={()=>{
-                router.push("/pageEditor?pageId="+item.page_id)
-              }}>
-                <div class="page-item-info-name">{item.page_name}</div>
-                <div class="page-item-info-other">
-                  <div style={{width:"100%"}}>页面ID:&emsp;{item.page_id}</div>
-                  <div style={{width:"100%"}}>当前版本:&emsp;{item.page_current_version}</div>
-                  <div style={{width:"100%"}}>创建时间:&emsp;{new Date(Number(item.page_create_time)).toLocaleDateString()}</div>
-                  <div style={{width:"100%"}}>最近修改:&emsp;{new Date(Number(item.page_version_time)).toLocaleDateString()}</div>
-                </div>
-              </div>
-            </NCard>
+              跳转至编辑页
+            </NTooltip>
           )
         })}
         <NCard class={"page-list-item"}
@@ -62,6 +108,7 @@ export default defineComponent({
         >
           <div onClick={()=>{
             newPageInfoModal.value.isShow = true;
+            newPageInfoModal.value.createTime = (new Date()).toLocaleDateString();
           }}>
             <div style={{fontSize:"50px"}}>+</div>
             <div>创建一个新页面</div>
@@ -80,9 +127,51 @@ export default defineComponent({
             title={"创建一个新页面"}
             style={{
               width:"550px",
-              height:"500px"
+              height:"400px"
+            }}
+            v-slots={{
+              "footer":()=>{
+                return (
+                  <NButton type="success" style={{
+                    transform: "translate(395px, -18px)"
+                  }} onClick={handleCreatePage}>确定</NButton>
+                )
+              }
             }}
           >
+            <div class="form-container">
+              <div class="form-item">
+                <div class="form-item-label">页面名称：</div>
+                <NInput placeholder={"请输入页面名称"} class="form-item-content" value={newPageInfoModal.value.pageName} onUpdate:value={(value)=>{
+                  newPageInfoModal.value.pageName = value;
+                }}></NInput>
+              </div>
+              <div class="form-item">
+                <div class="form-item-label">创建人：</div>
+                <NInput placeholder={"请输入页面名称"} disabled class="form-item-content" value={newPageInfoModal.value.username}></NInput>
+              </div>
+              <div class="form-item">
+                <div class="form-item-label">创建时间：</div>
+                <NInput placeholder={"请输入页面名称"} disabled class="form-item-content" value={newPageInfoModal.value.createTime}></NInput>
+              </div>
+              <div class="form-item">
+                <div class="form-item-label">模板：</div>
+                <NSelect placeholder={"你可以选择模板"} 
+                  class="form-item-content" 
+                  value={newPageInfoModal.value.template} 
+                  onUpdate:value={(value)=>{
+                    newPageInfoModal.value.template = value;
+                  }}
+                  options={templateOptions}
+                ></NSelect>
+              </div>
+              <div class="form-item">
+                <div class="form-item-label">共同搭建者：</div>
+                <NSelect placeholder={"添加协同创建者"} 
+                  class="form-item-content" 
+                ></NSelect>
+              </div>
+            </div>
             
           </NCard>
         </NModal>

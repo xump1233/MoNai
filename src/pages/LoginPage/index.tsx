@@ -156,9 +156,9 @@ const LoginWindow = defineComponent({
                 setToken("Bearer " + res.token);
                 message.success(res.message);
                 router.push("/index");
-                (window as any).userInfo = {
+                localStorage.setItem("userInfo",JSON.stringify({
                   username:username.value
-                }
+                }));
               })
             }}>登录</NButton>
           </div>
