@@ -11,5 +11,29 @@
   }
   .index-content{
     flex:1;
+    display: flex;
+
+    .index-content-left{
+      width:200px;
+      height: 100%;
+      padding-right:10px;
+
+      .n-tree-node-wrapper{
+        .n-tree-node{
+          height:50px;
+        }
+        .n-tree-node-switcher{
+          height: 50px;
+        }
+        .n-tree-node-switcher--expanded{
+          height: 50px;
+        }
+      }
+      
+    }
+    .index-content-right{
+      flex:1;
+      height:100%
+    }
   }
 }

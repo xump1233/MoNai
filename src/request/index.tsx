@@ -66,6 +66,7 @@ function setToken(token:string){
 
 const HeadersMap:Record<string,[string,string]> = {
   json:["Content-Type","application/json"],
+  "form-data":["Content-Type","multipart/form-data"]
 }
 
 const requestHeaders = (...args:string[])=>{

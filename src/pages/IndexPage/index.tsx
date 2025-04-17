@@ -1,49 +1,60 @@
 import { defineComponent } from "vue";
-import DataManage from "./components/DataManage";
-import PageManage from "./components/PageManage";
-import InfoManage from "./components/InfoManage";
 import "./index.less";
 
-import { NTabs,NTabPane } from "naive-ui"
+import { NTree } from "naive-ui"
+import type {TreeOverrideNodeClickBehavior } from "naive-ui"
+import { RouterView,useRouter } from "vue-router";
 
 export default defineComponent({
   setup(props, ctx) {
+    const router = useRouter();
+
+    const treeData = [{
+      label:"页面管理",
+      key:"page_manage"
+    },{
+      label:"数据管理",
+      key:"data_manage",
+      children:[{
+        label:"结构型数据管理",
+        key:"data_manage/structure_data",
+      },{
+        label:"静态数据管理",
+        key:"data_manage/asset_data"
+      },{
+        label:"接口树",
+        key:"data_manage/api_tree"
+      }]
+    },{
+      label:"个人信息",
+      key:"info_manage"
+    }]
+    const handleClick:TreeOverrideNodeClickBehavior = ({option})=>{
+      router.push(`/index/${option.key as string}`)
+      if (option.children) {
+        return 'toggleExpand'
+      }
+      return 'default'
+    }
+
+
     return ()=>(
       <div class="index-container">
         <div class="index-header"></div>
         <div class="index-content">
-          <NTabs
-            placement="left"
-            type="bar" 
-            animated
-            tab-style={{
-              width:"150px",
-              display:"flex",
-              justifyContent: "center",
-            }}
-            style={{
-              height:"100%"
-            }}
-          >
-            <NTabPane
-              name="page" 
-              tab="页面"
-            >
-              <PageManage></PageManage>
-            </NTabPane>
-            <NTabPane
-              name="data" 
-              tab="数据"
-            >
-              <DataManage></DataManage>
-            </NTabPane>
-            <NTabPane
-              name="info" 
-              tab="信息"
-            >
-              <InfoManage></InfoManage>
-            </NTabPane>
-          </NTabs>
+          <div class="index-content-left">
+            <NTree
+              block-line
+              cancelable
+              data={treeData}
+              overrideDefaultNodeClickBehavior={handleClick}
+            > 
+            </NTree>
+          </div>
+          <div class="index-content-right">
+            <RouterView></RouterView>
+          </div>
+          
         </div>
         <div class="index-footer"></div>
       </div>

@@ -13,7 +13,6 @@ import {
 } from "naive-ui"
 
 import usePageData from "./usePageData";
-import { toRefs } from "vue";
 
 const { setPropsById } = usePageData();
 
