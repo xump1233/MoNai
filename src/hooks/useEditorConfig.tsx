@@ -4,6 +4,7 @@ import PreviewBox from "@/components/PreviewBox";
 import PropsEditBox from "@/components/PropsEditBox";
 import BasicText from "@/components/BasicComponents/BasicText";
 import BasicButton from "@/components/BasicComponents/BasicButton";
+import BasicImage from "@/components/BasicComponents/BasicImage";
 
 import { 
   NButton,
@@ -15,6 +16,16 @@ import {
 import usePageData from "./usePageData";
 
 const { setPropsById } = usePageData();
+
+function setProps(unit:IComponentUnit,key:string,value:any){
+  if(unit.props){
+    unit.props[key] = value;
+  }else{
+    unit.props = {
+      key:value,
+    }
+  }
+}
 
 
 function createEditorConfig(){
@@ -262,6 +273,78 @@ registerConfig.register({
       
     </PropsEditBox>
   ),
+  logicList:{
+    "onMounted":"初始化"
+  }
+})
+
+registerConfig.register({
+  label:"图片",
+  name:"image",
+  defaultWidth:64,
+  defaultHeight:64,
+  preview:()=>(
+    <PreviewBox>
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4813" width="32" height="32"><path d="M938.666667 553.92V768c0 64.8-52.533333 117.333333-117.333334 117.333333H202.666667c-64.8 0-117.333333-52.533333-117.333334-117.333333V256c0-64.8 52.533333-117.333333 117.333334-117.333333h618.666666c64.8 0 117.333333 52.533333 117.333334 117.333333v297.92z m-64-74.624V256a53.333333 53.333333 0 0 0-53.333334-53.333333H202.666667a53.333333 53.333333 0 0 0-53.333334 53.333333v344.48A290.090667 290.090667 0 0 1 192 597.333333a286.88 286.88 0 0 1 183.296 65.845334C427.029333 528.384 556.906667 437.333333 704 437.333333c65.706667 0 126.997333 16.778667 170.666667 41.962667z m0 82.24c-5.333333-8.32-21.130667-21.653333-43.648-32.917333C796.768 511.488 753.045333 501.333333 704 501.333333c-121.770667 0-229.130667 76.266667-270.432 188.693334-2.730667 7.445333-7.402667 20.32-13.994667 38.581333-7.68 21.301333-34.453333 28.106667-51.370666 13.056-16.437333-14.634667-28.554667-25.066667-36.138667-31.146667A222.890667 222.890667 0 0 0 192 661.333333c-14.464 0-28.725333 1.365333-42.666667 4.053334V768a53.333333 53.333333 0 0 0 53.333334 53.333333h618.666666a53.333333 53.333333 0 0 0 53.333334-53.333333V561.525333zM320 480a96 96 0 1 1 0-192 96 96 0 0 1 0 192z m0-64a32 32 0 1 0 0-64 32 32 0 0 0 0 64z" fill="#707070" p-id="4814"></path></svg>
+    </PreviewBox>
+  ),
+  render:(props:any)=>{
+    return (
+      <BasicImage {...props}></BasicImage>
+    )
+  },
+  editProps:(props:{
+    unit:IComponentUnit
+  })=>(
+    <PropsEditBox>
+      <div class="props-item">
+        <div class="props-item-label">控件名：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"默认名为:"+props.unit.id} value={props.unit?.alias || ""} onUpdate:value={(value:string)=>{
+              props.unit.alias = value
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">url：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"请输入图片url"} value={props.unit.props?.url || ""} onUpdate:value={(value:string)=>{
+              if(props.unit.props){
+                props.unit.props.url = value
+              }else{
+                props.unit.props = {
+                  value
+                }
+              }
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">宽度：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"图片宽度"} value={props.unit.props?.width || ""} onUpdate:value={(value:string)=>{
+              setProps(props.unit,"width",Number(value));
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">高度：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"图片高度"} value={props.unit.props?.height || ""} onUpdate:value={(value:string)=>{
+              setProps(props.unit,"height",Number(value));
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+    </PropsEditBox>
+  ),
+  contextProps:[{
+    name:"url",
+    description:"图片url"
+  }],
   logicList:{
     "onMounted":"初始化"
   }
