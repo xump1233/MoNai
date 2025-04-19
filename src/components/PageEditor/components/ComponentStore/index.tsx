@@ -2,7 +2,7 @@ import { defineComponent,ref } from "vue";
 import { registerConfig as config } from "@/hooks/useEditorConfig";
 import './index.less'
 import type { IBasicComponent } from "@/interface";
-import useDrag from "@/hooks/useDrag";
+import useDrag from "../../hooks/useDrag";
 import useStoreMove from "./hooks/useStoreMove";
 import useResize from "./hooks/useResize";
 import useSchedule from "../../hooks/useSchedule";

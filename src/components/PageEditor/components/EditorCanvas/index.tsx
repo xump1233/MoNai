@@ -8,7 +8,7 @@ import { useMessage } from "naive-ui";
 
 
 import usePageData from "@/hooks/usePageData";
-import useDrag from "@/hooks/useDrag";
+import useDrag from "../..//hooks/useDrag";
 import useSelectFocus from "./hooks/useSelectFocus";
 import useMoveCanvas from "./hooks/useMoveCanvas";
 

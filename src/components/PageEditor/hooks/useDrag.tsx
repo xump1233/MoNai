@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import usePageData from "./usePageData";
+import usePageData from "@/hooks/usePageData";
 import { DragState } from "@/constant";
 import type { DragStateType, IBasicComponent } from "@/interface";
 
