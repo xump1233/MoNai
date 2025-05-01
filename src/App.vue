@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageContainer from "./components/page-container/index.vue"
+import PageContainer from "./components/PageContainer/index.vue"
 import { RouterView } from "vue-router"
 import { NMessageProvider } from "naive-ui"
 import "./App.less"

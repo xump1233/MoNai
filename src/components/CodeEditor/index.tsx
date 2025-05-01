@@ -24,9 +24,9 @@ export default defineComponent({
     let monacoInstance:any;
     const spinIsShow = ref<boolean>(true);
 
-    function getValue(){
-      console.log(monacoInstance.getValue())
-    }
+    // function getValue(){
+    //   console.log(monacoInstance.getValue())
+    // }
     let onUpdate:Function;
     if(props.onUpdate){
       onUpdate = throttle(props.onUpdate,500);

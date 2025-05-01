@@ -1,9 +1,12 @@
-import { ref,Ref } from "vue";
+import { ref,Ref,computed } from "vue";
 import usePageData from "@/hooks/usePageData";
 
 
 export default function(options?:{isKeySpace?:Ref<boolean>}){
-  const { focusRangeUnit } = usePageData();
+  const { focusRangeUnit,pageData } = usePageData();
+  const reta = computed(()=>{
+    return pageData.value.pageContainer.currentReta
+  })
   const beginPosition = ref<{top:number,left:number,selectTop:number,selectLeft:number}>();
   const selectMaskStyle = ref<{
     width:string,
@@ -39,8 +42,8 @@ export default function(options?:{isKeySpace?:Ref<boolean>}){
     let offsetTop:number
     let offsetLeft:number
     if(lastLeft.value !== void 0 && lastTop.value !== void 0){
-      offsetTop =  e.clientY - (beginPosition.value?.top as number),
-      offsetLeft =  e.clientX - (beginPosition.value?.left as number)
+      offsetTop =  (e.clientY - (beginPosition.value?.top as number))/reta.value,
+      offsetLeft =  (e.clientX - (beginPosition.value?.left as number))/reta.value
     }
     else{
       offsetTop = 0;

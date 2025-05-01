@@ -1,7 +1,8 @@
 import type { IBasicComponent, IComponentUnit, ILogicItem, IPageData,  } from "@/interface";
 import { computed, ref } from "vue";
 import getSearch from "@/utils/getSearch";
-import * as Api from "@/api"
+import * as Api from "@/api";
+import bus from "@/utils/EventBus";
 
 
 
@@ -10,7 +11,7 @@ const pageData = ref<IPageData>({
   pageContainer:{
     width:1980,//1980px,1280,800
     height:1080,//1080px,768,600
-    currentReta:0.5,
+    currentReta:1,
   },
   components:[{
     name:'input',
@@ -43,6 +44,17 @@ const pageData = ref<IPageData>({
   logics:{}
 });
 
+function changePageReta(value:number){
+  pageData.value.pageContainer.currentReta = value;
+}
+function backPageVersion(pageJSON:string){
+  try{
+    const json = JSON.parse(pageJSON);
+    pageData.value = json;
+  }catch(err){
+    (window as any).message.error("回滚异常：",err);
+  }
+}
 function savePageData(success?:Function,error?:Function){
   const { pageId } = getSearch();
   Api.PAGE.setPageDataByPageId(pageId,{
@@ -51,6 +63,7 @@ function savePageData(success?:Function,error?:Function){
   }).then(res=>{
     if(res.success){
       success && success();
+      bus.emit("refreshHistory");
     }else{
       error && error();
     }
@@ -109,34 +122,51 @@ function setLogicById(id:string,logicName:string,logicItem:ILogicItem){
     }
   })
 }
-function zIndexMoveUpAndDown(id:string,op:"up" | "down"){
+function zIndexMoveUpAndDown(id: string, op: "up" | "down") {
   const { unit } = findUnit(id);
-  if(unit){
-    const { top,left,zIndex } = unit.position;
-    const { width,height } = unit.props as {width:number,height:number}; 
-    let minGup = Number.MAX_VALUE;
-    pageData.value.components.forEach((item:IComponentUnit)=>{
-      if(item.id === unit.id){
-        return
+  if (!unit || !unit.props) return;
+
+  const { top, left, zIndex } = unit.position;
+  const { width = 0, height = 0 } = unit.props as { width: number; height: number };
+
+  // 准备计算相交的组件集合
+  const overlaps: IComponentUnit[] = [];
+
+  pageData.value.components.forEach((item: IComponentUnit) => {
+    if (item.id === id || !item.props) return;
+
+    const { top: cTop, left: cLeft, zIndex: _ } = item.position;
+    const { width: cWidth = 0, height: cHeight = 0 } = item.props as { width: number; height: number };
+
+    const isOverlap =
+      left < cLeft + cWidth &&
+      left + width > cLeft &&
+      top < cTop + cHeight &&
+      top + height > cTop;
+
+    if (isOverlap) {
+      overlaps.push(item);
+    }
+  });
+
+  // 找到相交组件中层级最接近的
+  let targetZIndex: number | null = null;
+  overlaps.forEach((item) => {
+    const diff = item.position.zIndex - zIndex;
+
+    if (op === "up" && diff > 0) {
+      if (targetZIndex === null || item.position.zIndex < targetZIndex) {
+        targetZIndex = item.position.zIndex;
       }
-      const {top:cTop,left:cLeft,zIndex:CZIndex} = item.position;
-      const { width:CWidth,height:CHeight } = item.props as {width:number,height:number};
-      const judgeX = (( cLeft >= left && cLeft <= left + width) || (cLeft + CWidth >= left && cLeft+CWidth <= left + width));
-      const judgeY = (( cTop >= top  && cTop <= top + height) || (cTop+CHeight >= top  && cTop+CHeight <= top + height));
-      if(judgeX || judgeY){
-        if(op === "up" && CZIndex >= zIndex && CZIndex-zIndex<minGup){
-          minGup = CZIndex-zIndex;
-        }else if(op === "down" && CZIndex <= zIndex && zIndex-CZIndex<minGup){
-          minGup = zIndex - CZIndex;
-        }
-      }
-    })
-    if(minGup !== Number.MAX_VALUE){
-      unit.position = {
-        ...unit.position,
-        zIndex:zIndex + (op === "up" ? 1+minGup : -1-minGup)
+    } else if (op === "down" && diff < 0) {
+      if (targetZIndex === null || item.position.zIndex > targetZIndex) {
+        targetZIndex = item.position.zIndex;
       }
     }
+  });
+
+  if (targetZIndex !== null) {
+    unit.position.zIndex = op === "up" ? targetZIndex + 1 : targetZIndex - 1;
   }
 }
 function removeComponent(id:string){
@@ -152,7 +182,6 @@ function pushComponent(unit:IComponentUnit){
 function componentOver(target:IBasicComponent,position: { top: number; left: number; zIndex: number }) {
   if (temporaryComponent) {
     temporaryComponent.position = position;
-    // 使用 Vue 提供的响应式方法修改数组
     const newComponents = pageData.value.components.filter((item: IComponentUnit) => !item.temporaryTarget);
     newComponents.push(JSON.parse(JSON.stringify(temporaryComponent)));
     pageData.value.components = newComponents;
@@ -164,7 +193,6 @@ function componentOver(target:IBasicComponent,position: { top: number; left: num
       position: position,
       temporaryTarget: target.name,
     };
-    // 使用 Vue 提供的响应式方法修改数组
     pageData.value.components.push(temporaryComponent);
   }
 }
@@ -254,8 +282,8 @@ function moveUnit(id:string,position:{offsetTop:number,offsetLeft:number}){
   return pageData.value.components.splice(unitIndex,1,{
     ...unit,
     position:{
-      top:unit.position.top as number + position.offsetTop,
-      left:unit.position.left as number + position.offsetLeft,
+      top:unit.position.top as number + position.offsetTop/pageData.value.pageContainer.currentReta,
+      left:unit.position.left as number + position.offsetLeft/pageData.value.pageContainer.currentReta,
       zIndex:unit.position.zIndex,
     }
   })
@@ -272,11 +300,13 @@ function moveFocusUnit(position:{offsetLeft:number,offsetTop:number}){
 export default function(){
   return {
     pageData,
+    backPageVersion,
     getPageData,
     savePageData,
     pushComponent,
     componentOver,
     componentLeave,
+    changePageReta,
 
     findUnit,
     unFocusList,

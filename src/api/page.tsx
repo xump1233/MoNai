@@ -39,9 +39,33 @@ function postCreatePage(body:{
   })
 }
 
+function postHistoryListById(pageId:number){
+  return postRequest("/pageStore/postHistoryListById",{
+    headers:requestHeaders("json"),
+    body:JSON.stringify({
+      page_id:pageId,
+    })
+  }).then(res=>{
+    return res.json();
+  })
+}
+function postHistoryJSON(body:{
+  "page_id":number;
+  "page_version":number;
+}){
+  return postRequest("/pageStore/postHistoryJson",{
+    headers:requestHeaders("json"),
+    body:JSON.stringify(body)
+  }).then(res=>{
+    return res.json();
+  })
+}
+
 export default {
   setPageDataByPageId,
   getPageDataByPageId,
   getPageList,
   postCreatePage,
+  postHistoryListById,
+  postHistoryJSON,
 };

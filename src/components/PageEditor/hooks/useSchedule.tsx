@@ -1,8 +1,12 @@
 import { ref } from "vue";
 import type { IBottomBarItem } from "@/interface";
+// import usePageData from "@/hooks/usePageData";
 
+// const { changePageReta } = usePageData();
 
-const barList = ref<IBottomBarItem[]>([{name:"test"}]);
+const barList = ref<IBottomBarItem[]>([{
+  name:"test"
+}]);
 
 
 function pushItem(item:IBottomBarItem){
@@ -17,6 +21,8 @@ function removeItem(id:string){
     return item.name !== id
   })
 }
+
+
 
 
 export default function(){

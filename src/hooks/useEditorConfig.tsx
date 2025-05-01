@@ -324,19 +324,25 @@ registerConfig.register({
       <div class="props-item">
         <div class="props-item-label">宽度：</div>
         <div class="props-item-content">
-          <NInput placeholder={"图片宽度"} value={props.unit.props?.width || ""} onUpdate:value={(value:string)=>{
+          <NInputNumber placeholder={"图片宽度"} value={props.unit.props?.width || ""} onUpdate:value={(value)=>{
               setProps(props.unit,"width",Number(value));
-              // setPropsById(unit.id,{value:value});
-            }}></NInput>
+            }} v-slots={{
+              suffix:()=>{
+                return <div style={{color:"#aaa"}}>px</div>
+              }
+            }}></NInputNumber>
         </div>
       </div>
       <div class="props-item">
         <div class="props-item-label">高度：</div>
         <div class="props-item-content">
-          <NInput placeholder={"图片高度"} value={props.unit.props?.height || ""} onUpdate:value={(value:string)=>{
-              setProps(props.unit,"height",Number(value));
-              // setPropsById(unit.id,{value:value});
-            }}></NInput>
+          <NInputNumber placeholder={"图片高度"} value={props.unit.props?.height || ""} onUpdate:value={(value)=>{
+            setProps(props.unit,"height",Number(value));
+          }} v-slots={{
+            suffix:()=>{
+              return <div style={{color:"#aaa"}}>px</div>
+            }
+          }}></NInputNumber>
         </div>
       </div>
     </PropsEditBox>

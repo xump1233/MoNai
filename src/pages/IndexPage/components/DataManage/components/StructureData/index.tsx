@@ -21,13 +21,13 @@ interface IColumnsItem {
   default:string;
 }
 
-const TypeMap = {
+// const TypeMap = {
   
-}
+// }
 
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup() {
     
     const options = [{
       label:"number",
@@ -78,7 +78,7 @@ export default defineComponent({
               onCreate={(_)=>{
                 newTableInfo.value.columns.push({name:"",type:"",default:""})
               }}
-              onRemove={(index:number)=>{
+              onRemove={(_:number)=>{
 
               }}
               v-slots={{
@@ -89,7 +89,7 @@ export default defineComponent({
                   
                   return (
                     <div style={{display: "flex", alignItems: "center", width: "100%"}}>
-                      <NInput value={item.value.name} onUpdate:value={(value:string)=>{
+                      <NInput value={item.value.name} onUpdate:value={(_:string)=>{
 
                       }} style={{width:"35%"}} placeholder={"字段名"}></NInput>
                       <NSelect 

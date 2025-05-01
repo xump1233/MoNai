@@ -1,4 +1,4 @@
-import { defineComponent,ref,onMounted, reactive } from "vue";
+import { defineComponent,ref,onMounted } from "vue";
 import { 
   NDataTable,
   DataTableColumns,
@@ -40,7 +40,7 @@ interface IFileInfo {
   description:string;
 }
 
-type AssetEnum = "image" | "vedio" | "attachment"
+// type AssetEnum = "image" | "vedio" | "attachment"
 
 export default defineComponent({
   setup() {

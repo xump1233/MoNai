@@ -6,7 +6,7 @@ import type {TreeOverrideNodeClickBehavior } from "naive-ui"
 import { RouterView,useRouter } from "vue-router";
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup() {
     const router = useRouter();
 
     const treeData = [{

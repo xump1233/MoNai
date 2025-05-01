@@ -169,7 +169,7 @@ const LoginWindow = defineComponent({
 })
 
 export default defineComponent({
-  setup(props, ctx) {
+  setup() {
     const loginWindowRef = ref();
     
 

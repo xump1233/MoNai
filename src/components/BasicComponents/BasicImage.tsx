@@ -13,10 +13,10 @@ export default defineComponent({
       type:Number
     }
   },
-  setup(props, ctx) {
+  setup(props) {
 
     return ()=>(
-      <div style={{width:props.width+"px" || "100px",height:props.height+"px" || "50px"}}>
+      <div style={{width:(props.width || 64)+"px",height:(props.height || 64)+"px"}}>
         <img src={props.url || "/default_image.png"} draggable={false} alt="" style={{
           width:"100%",
           height:"100%",

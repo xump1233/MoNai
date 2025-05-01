@@ -13,7 +13,7 @@ const PageTemplate:Record<string,string> = {
   "pageContainer":{
     "width":1980,
     "height":1080,
-    "currentReta":0.5
+    "currentReta":1
   },
   "components":[],
   "logics":{}

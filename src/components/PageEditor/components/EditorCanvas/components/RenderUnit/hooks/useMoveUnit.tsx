@@ -23,7 +23,7 @@ export default function useUnitMove(id: string): {
   const currentUnitId = ref<string | undefined>();
   const startX = ref<number | undefined>();
   const startY = ref<number | undefined>();
-  const enableSnap = ref<boolean>(true); // 默认开启吸附
+  const enableSnap = ref<boolean>(true);
 
   function setSnapEnable(enable: boolean): void {
     enableSnap.value = enable;
