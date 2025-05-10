@@ -13,10 +13,15 @@ import {
   useMessage,
   NPopconfirm,
   NTag,
+  NSpin,
+  NEllipsis,
+  NTooltip,
+  NSelect,
 } from "naive-ui";
 import './index.less'
 import * as Api from "@/api"
 import { BASE_URL } from "@/request";
+import copyToClipboard from "@/utils/copyToClipboard";
 
 
 interface IDataSourceItem {
@@ -41,6 +46,7 @@ interface IFileInfo {
 }
 
 // type AssetEnum = "image" | "vedio" | "attachment"
+type FilterEnum = "type" | "user" | "description" | "path"
 
 export default defineComponent({
   setup() {
@@ -49,15 +55,20 @@ export default defineComponent({
     const columns:DataTableColumns<IDataSourceItem> = [{
       key:"no",
       title:"序号",
+      width:80,
       render(_,index){
         return index+1
       }
     },{
       key:"name",
       title:"名称",
+      render(record){
+        return <NEllipsis style={{maxWidth:"100px"}}>{record.name}</NEllipsis>
+      }
     },{
       key:"user",
       title:"创建用户",
+      width:80,
     },{
       key:"type",
       title:"类型",
@@ -67,6 +78,31 @@ export default defineComponent({
     },{
       key:"path",
       title:"路径",
+      // ellipsis:true,
+      render(record){
+        return <div style={{display:"flex",alignItems:"center"}}>
+          <NEllipsis style={{maxWidth:"250px"}}>{BASE_URL + "/get_asset/" + record.path}</NEllipsis>
+          <NTooltip 
+            v-slots={{
+              trigger(){
+                return (
+                <div style={{display:"flex",alignItems:"center",cursor:"pointer"}} onClick={()=>{
+                  copyToClipboard(BASE_URL + "/get_asset/" + record.path).then(res=>{
+                    if(res){
+                      message.success("复制成功！")
+                    }
+                  })
+                }}>
+                  <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4992" width="16" height="16"><path d="M394.666667 106.666667h448a74.666667 74.666667 0 0 1 74.666666 74.666666v448a74.666667 74.666667 0 0 1-74.666666 74.666667H394.666667a74.666667 74.666667 0 0 1-74.666667-74.666667V181.333333a74.666667 74.666667 0 0 1 74.666667-74.666666z m0 64a10.666667 10.666667 0 0 0-10.666667 10.666666v448a10.666667 10.666667 0 0 0 10.666667 10.666667h448a10.666667 10.666667 0 0 0 10.666666-10.666667V181.333333a10.666667 10.666667 0 0 0-10.666666-10.666666H394.666667z m245.333333 597.333333a32 32 0 0 1 64 0v74.666667a74.666667 74.666667 0 0 1-74.666667 74.666666H181.333333a74.666667 74.666667 0 0 1-74.666666-74.666666V394.666667a74.666667 74.666667 0 0 1 74.666666-74.666667h74.666667a32 32 0 0 1 0 64h-74.666667a10.666667 10.666667 0 0 0-10.666666 10.666667v448a10.666667 10.666667 0 0 0 10.666666 10.666666h448a10.666667 10.666667 0 0 0 10.666667-10.666666v-74.666667z" fill="#8a8a8a" p-id="4993"></path></svg>
+                </div>
+                )
+              }
+            }}
+          >
+            点击复制
+          </NTooltip>
+        </div>
+      }
     },{
       key:"time",
       title:"创建时间",
@@ -86,6 +122,9 @@ export default defineComponent({
     },{
       key:"description",
       title:"描述",
+      render(record){
+        return <NEllipsis style={{maxWidth:"200px"}}>{record.description}</NEllipsis>
+      }
     },{
       key:"operate",
       title:"操作",
@@ -111,9 +150,46 @@ export default defineComponent({
       }
     }]
 
-    const dataSource = ref<IDataSourceItem[]>([])
+    const selectOptions = [{
+      value:"name",
+      label:"名称"
+    },{
+      value:"user",
+      label:"用户",
+    },{
+      value:"type",
+      label:"类型"
+    },{
+      value:"path",
+      label:"路径"
+    },{
+      value:"description",
+      label:"描述"
+    }]
+    const filterInfo = ref<{type?:FilterEnum;content:string}>({content:""});
+    const filterData = ref<IDataSourceItem[] | null>(null);
+    const handleFilter = ()=>{
+      const key = filterInfo.value.type;
+      if(!key){
+        return;
+      }
+      const content = filterInfo.value.content;
+      filterData.value = dataSource.value.filter(item=>{
+        return item[key].indexOf(content) !== -1;
+      })
+    }
+    const handleFilterReset = ()=>{
+      filterData.value = null;
+      filterInfo.value = {
+        content:"",
+      }
+    }
+
+
+    const dataSource = ref<IDataSourceItem[]>([]);
 
     const modalShow = ref(false);
+    const uploadLoading = ref(false);
     const fileInfo = ref<IFileInfo>({name:"",size:0,type:"",username:"",description:""})
     const handleUploadChange = ({file}:{file:UploadFileInfo})=>{
       console.log(file)
@@ -130,6 +206,7 @@ export default defineComponent({
     }
     const handleUploadSubmit = ()=>{
       if(fileInfo.value.file){
+        uploadLoading.value = true;
         Api.DATA.postUploadFile(fileInfo.value.file,fileInfo.value.username).then(res=>{
           if(res.success){
             const body = {
@@ -151,6 +228,7 @@ export default defineComponent({
           }
         }).finally(()=>{
           modalShow.value = false;
+          uploadLoading.value = false;
         })
 
       }
@@ -211,66 +289,72 @@ export default defineComponent({
               overflow:"auto"
             }}
           >
-            <div class="form-container-asset">
-            <NUpload
-              style={{}}
-              directory-dnd
-              onChange={handleUploadChange}
-              max={1}
-            >
-              <NUploadDragger>
-                <div style="margin-bottom: 12px">
-                  <n-icon size="36" depth={3}>
-                  <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6044" width="64" height="64"><path d="M112 928a47.936 47.936 0 0 1-47.936-47.936v-224a48 48 0 1 1 96 0v176.064h704v-176.064a48 48 0 1 1 96 0v224a47.936 47.936 0 0 1-47.936 47.936z m352-263.936v-416L327.744 364.48a48.32 48.32 0 0 1-31.232 11.584 47.296 47.296 0 0 1-36.352-16.896 47.808 47.808 0 0 1 5.312-67.648l215.424-184.128a48.32 48.32 0 0 1 62.336 0l215.232 184.128a48 48 0 0 1-62.336 72.96L559.872 248.064v416a48 48 0 0 1-96 0z" fill="#585858" p-id="6045"></path></svg>
-                  </n-icon>
+            <NSpin show={uploadLoading.value} v-slots={{description:()=>"资源上传中。。。"}}>
+              <div class="form-container-asset">
+              <NUpload
+                style={{}}
+                directory-dnd
+                onChange={handleUploadChange}
+                max={1}
+              >
+                <NUploadDragger>
+                  <div style="margin-bottom: 12px">
+                    <n-icon size="36" depth={3}>
+                    <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6044" width="64" height="64"><path d="M112 928a47.936 47.936 0 0 1-47.936-47.936v-224a48 48 0 1 1 96 0v176.064h704v-176.064a48 48 0 1 1 96 0v224a47.936 47.936 0 0 1-47.936 47.936z m352-263.936v-416L327.744 364.48a48.32 48.32 0 0 1-31.232 11.584 47.296 47.296 0 0 1-36.352-16.896 47.808 47.808 0 0 1 5.312-67.648l215.424-184.128a48.32 48.32 0 0 1 62.336 0l215.232 184.128a48 48 0 0 1-62.336 72.96L559.872 248.064v416a48 48 0 0 1-96 0z" fill="#585858" p-id="6045"></path></svg>
+                    </n-icon>
+                  </div>
+                  <NText style="font-size: 16px">
+                    点击或者拖动文件到该区域来上传
+                  </NText>
+                </NUploadDragger>
+              </NUpload>
+                <div class="form-item">
+                  <div class="form-item-label">名称：</div>
+                  <NInput placeholder={"请输入接口名称"} class="form-item-content" value={fileInfo.value?.name} onUpdate:value={(value:string)=>{
+                    fileInfo.value.name = value
+                  }}></NInput>
                 </div>
-                <NText style="font-size: 16px">
-                  点击或者拖动文件到该区域来上传
-                </NText>
-                {/* <NP depth="3" style="margin: 8px 0 0 0">
-                  请不要上传敏感数据，比如你的银行卡号和密码，信用卡号有效期和安全码
-                </NP> */}
-              </NUploadDragger>
-            </NUpload>
-              <div class="form-item">
-                <div class="form-item-label">名称：</div>
-                <NInput placeholder={"请输入接口名称"} class="form-item-content" value={fileInfo.value?.name} onUpdate:value={(value:string)=>{
-                  fileInfo.value.name = value
-                }}></NInput>
+                <div class="form-item">
+                  <div class="form-item-label">创建人：</div>
+                  <NInput placeholder={"选择自动填充"} disabled value={fileInfo.value.username} class="form-item-content"></NInput>
+                </div>
+                <div class="form-item">
+                  <div class="form-item-label">类型：</div>
+                  <NInput placeholder={"选择自动填充"} disabled value={fileInfo.value.type} class="form-item-content"></NInput>
+                </div>
+                <div class="form-item">
+                  <div class="form-item-label">文件大小：</div>
+                  <NInput placeholder={"选择自动填充"} disabled value={String(fileInfo.value.size)+" B"} class="form-item-content"></NInput>
+                </div>
+                <div class="form-item">
+                  <div class="form-item-label">描述：</div>
+                  <NInput placeholder={"请输入文件描述"} class="form-item-content" value={fileInfo.value.description} onUpdate:value={(value:string)=>{
+                    fileInfo.value.description = value;
+                  }}></NInput>
+                </div>
+                <div class="form-item">
+                  <NButton style={{margin:"auto",width:"90px"}} type="info" onClick={handleUploadSubmit}>上传</NButton>
+                </div>
               </div>
-              <div class="form-item">
-                <div class="form-item-label">创建人：</div>
-                <NInput placeholder={"选择自动填充"} disabled value={fileInfo.value.username} class="form-item-content"></NInput>
-              </div>
-              <div class="form-item">
-                <div class="form-item-label">类型：</div>
-                <NInput placeholder={"选择自动填充"} disabled value={fileInfo.value.type} class="form-item-content"></NInput>
-              </div>
-              <div class="form-item">
-                <div class="form-item-label">文件大小：</div>
-                <NInput placeholder={"选择自动填充"} disabled value={String(fileInfo.value.size)+" B"} class="form-item-content"></NInput>
-              </div>
-              <div class="form-item">
-                <div class="form-item-label">描述：</div>
-                <NInput placeholder={"请输入文件描述"} class="form-item-content" value={fileInfo.value.description} onUpdate:value={(value:string)=>{
-                  fileInfo.value.description = value;
-                }}></NInput>
-              </div>
-              <div class="form-item">
-                <NButton style={{margin:"auto",width:"90px"}} type="info" onClick={handleUploadSubmit}>上传</NButton>
-              </div>
-            </div>
+            </NSpin>
+
           </NCard>
         </NModal>
         <div class="data_manage_asset_header">
           <NButton type="info" onClick={()=>{
             modalShow.value = true;
           }}>创建静态资源</NButton>
+          <div style={{display:"flex",marginRight:"30px"}}>
+            <NSelect options={selectOptions} placeholder="查找列" style={{width:"150px"}} v-model:value={filterInfo.value.type}></NSelect>
+            <NInput placeholder={"查找内容"} style={{width:"200px",height:"34px",marginLeft:"20px"}} v-model:value={filterInfo.value.content}></NInput>
+            <NButton type="success" style={{marginLeft:"10px"}} onClick={handleFilter}>查找</NButton>
+            <NButton type="warning" style={{marginLeft:"10px"}} onClick={handleFilterReset}>重置</NButton>
+          </div>
         </div>
-        <div>
+        <div class={"data_manage_asset_content"}>
           <NDataTable
             columns={columns}
-            data={dataSource.value}
+            data={filterData.value || dataSource.value}
           ></NDataTable>
         </div>
       </div>

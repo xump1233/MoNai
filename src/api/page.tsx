@@ -61,6 +61,46 @@ function postHistoryJSON(body:{
   })
 }
 
+function postCreatePagePermission(body:{
+  user:string;
+  pageId:number;
+  permissionLevel:number;
+  grantBy:string;
+  grantTime:string;
+  description:string;
+}){
+  return postRequest("/pageStore/postCreatePagePermission",{
+    headers:requestHeaders("json"),
+    body:JSON.stringify(body),
+  }).then(res=>{
+    return res.json();
+  })
+}
+function postCancelPagePermission(body:{
+  user:string;
+  grantBy:string;
+  pageId:number;
+}){
+  return postRequest("/pageStore/postCancelPagePermission",{
+    headers:requestHeaders("json"),
+    body:JSON.stringify(body)
+  }).then(res=>{
+    return res.json();
+  })
+}
+
+function postPermissionList(){
+  return postRequest("/pageStore/postPermissionList",{}).then(res=>{
+    return res.json()
+  })
+}
+
+function postPermissionPageList(){
+  return postRequest("/pageStore/postPermissionPageList",{}).then(res=>{
+    return res.json();
+  })
+}
+
 export default {
   setPageDataByPageId,
   getPageDataByPageId,
@@ -68,4 +108,8 @@ export default {
   postCreatePage,
   postHistoryListById,
   postHistoryJSON,
+  postCreatePagePermission,
+  postCancelPagePermission,
+  postPermissionList,
+  postPermissionPageList,
 };

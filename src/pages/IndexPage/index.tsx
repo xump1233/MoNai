@@ -1,4 +1,4 @@
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import "./index.less";
 
 import { NTree } from "naive-ui"
@@ -8,6 +8,7 @@ import { RouterView,useRouter } from "vue-router";
 export default defineComponent({
   setup() {
     const router = useRouter();
+    const selectKey = ref("")
 
     const treeData = [{
       label:"页面管理",
@@ -30,6 +31,7 @@ export default defineComponent({
       key:"info_manage"
     }]
     const handleClick:TreeOverrideNodeClickBehavior = ({option})=>{
+      selectKey.value = option.key as string;
       router.push(`/index/${option.key as string}`)
       if (option.children) {
         return 'toggleExpand'
@@ -37,6 +39,11 @@ export default defineComponent({
       return 'default'
     }
 
+    onMounted(()=>{
+      const href = location.href;
+      const key = href.split("index/")[1];
+      selectKey.value = key;
+    })
 
     return ()=>(
       <div class="index-container">
@@ -46,8 +53,10 @@ export default defineComponent({
             <NTree
               block-line
               cancelable
+              selectedKeys={[selectKey.value]}
               data={treeData}
               overrideDefaultNodeClickBehavior={handleClick}
+              defaultExpandAll={true}
             > 
             </NTree>
           </div>

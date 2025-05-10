@@ -8,7 +8,10 @@ import {
   NButton,
   NSelect,
   NTooltip,
+  NTabs,
+  NTabPane,
 } from "naive-ui";
+import PermissionList from "./components/PermissionList";
 import * as API from "@/api"
 import { useRouter } from "vue-router";
 import { PageTemplate } from "@/constant"
@@ -19,6 +22,7 @@ interface IPageListItem{
   page_create_time:string;
   page_current_version:number;
   page_version_time:string;
+  isPermission?:boolean;
 } 
 type IPageList = IPageListItem[]
 
@@ -26,14 +30,30 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const pageList = ref<IPageList>([]);
-    function getPageList(){
-      API.PAGE.getPageList().then(res=>{
+    async function getAllPageList(){
+      await getPageList();
+      getPermissionPageList()
+    }
+    async function getPageList(){
+      return API.PAGE.getPageList().then(res=>{
         if(res.success){
           pageList.value = res.data
         }
       });
     }
-    getPageList();
+    function getPermissionPageList(){
+      API.PAGE.postPermissionPageList().then(res=>{
+        if(res.success){
+          pageList.value = pageList.value.concat(res.data.map((item:any)=>{
+            return {
+              ...item,
+              isPermission:true,
+            }
+          }));
+        }
+      })
+    }
+    getAllPageList();
     onMounted(()=>{
       const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
       newPageInfoModal.value.username = userInfo?.username || "";
@@ -67,53 +87,63 @@ export default defineComponent({
 
     return ()=>(
       <div class={"index-page-manage"}>
-        {pageList.value && pageList.value.map((item:IPageListItem)=>{
-          return (
-            <NTooltip
-              placement="bottom" trigger="hover"
-              v-slots={{
-                trigger:()=>{
-                  return (
-                    <NCard 
-                      class="page-list-item" 
-                      contentStyle={{padding:"10px"}}
-                    >
-                      <div class="page-item-info" onClick={()=>{
-                        router.push("/pageEditor?pageId="+item.page_id)
-                      }}>
-                        <div class="page-item-info-name">{item.page_name}</div>
-                        <div class="page-item-info-other">
-                          <div style={{width:"100%"}}>页面ID:&emsp;{item.page_id}</div>
-                          <div style={{width:"100%"}}>当前版本:&emsp;{item.page_current_version}</div>
-                          <div style={{width:"100%"}}>创建时间:&emsp;{new Date(Number(item.page_create_time)).toLocaleDateString()}</div>
-                          <div style={{width:"100%"}}>最近修改:&emsp;{new Date(Number(item.page_version_time)).toLocaleDateString()}</div>
-                        </div>
-                      </div>
-                    </NCard>  
-                  )
-                }
+        <NTabs type="line">
+          <NTabPane name="页面列表">
+            {pageList.value && pageList.value.map((item:IPageListItem)=>{
+              return (
+                <NTooltip
+                  placement="bottom" trigger="hover"
+                  v-slots={{
+                    trigger:()=>{
+                      return (
+                        <NCard 
+                          class="page-list-item" 
+                          style={item.isPermission ? {backgroundColor:"rgb(194 242 236 / 50%)"} : {}}
+                          contentStyle={{padding:"10px"}}
+                        >
+                          <div class="page-item-info" onClick={()=>{
+                            router.push("/pageEditor?pageId="+item.page_id)
+                          }}>
+                            <div class="page-item-info-name">{item.page_name}</div>
+                            <div class="page-item-info-other">
+                              <div style={{width:"100%"}}>页面ID:&emsp;{item.page_id}</div>
+                              <div style={{width:"100%"}}>当前版本:&emsp;{item.page_current_version}</div>
+                              <div style={{width:"100%"}}>创建时间:&emsp;{new Date(Number(item.page_create_time)).toLocaleDateString()}</div>
+                              <div style={{width:"100%"}}>最近修改:&emsp;{new Date(Number(item.page_version_time)).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                        </NCard>  
+                      )
+                    }
+                  }}
+                >
+                  跳转至编辑页
+                </NTooltip>
+              )
+            })}
+            <NCard class={"page-list-item"}
+              contentStyle={{
+                display:"flex",
+                justifyContent:"center",
+                alignItems:"center",
+                textAlign:"center"
               }}
+              style={{backgroundColor:"rgb(216 216 216 / 50%)"}}
             >
-              跳转至编辑页
-            </NTooltip>
-          )
-        })}
-        <NCard class={"page-list-item"}
-          contentStyle={{
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center",
-            textAlign:"center"
-          }}
-        >
-          <div onClick={()=>{
-            newPageInfoModal.value.isShow = true;
-            newPageInfoModal.value.createTime = (new Date()).toLocaleDateString();
-          }}>
-            <div style={{fontSize:"50px"}}>+</div>
-            <div>创建一个新页面</div>
-          </div>
-        </NCard>
+              <div onClick={()=>{
+                newPageInfoModal.value.isShow = true;
+                newPageInfoModal.value.createTime = (new Date()).toLocaleDateString();
+              }}>
+                <div style={{fontSize:"50px"}}>+</div>
+                <div>创建一个新页面</div>
+              </div>
+            </NCard>
+          </NTabPane>
+          <NTabPane name="协同权限管理">
+            <PermissionList pageList={pageList.value.filter(item=>!item.isPermission)}></PermissionList>
+          </NTabPane>
+        </NTabs>
+        
         <NModal
           show={newPageInfoModal.value.isShow}
           onClose={()=>{

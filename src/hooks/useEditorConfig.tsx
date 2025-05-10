@@ -5,6 +5,7 @@ import PropsEditBox from "@/components/PropsEditBox";
 import BasicText from "@/components/BasicComponents/BasicText";
 import BasicButton from "@/components/BasicComponents/BasicButton";
 import BasicImage from "@/components/BasicComponents/BasicImage";
+import BasicVideo from "@/components/BasicComponents/BasicVideo";
 
 import { 
   NButton,
@@ -310,13 +311,7 @@ registerConfig.register({
         <div class="props-item-label">url：</div>
         <div class="props-item-content">
           <NInput placeholder={"请输入图片url"} value={props.unit.props?.url || ""} onUpdate:value={(value:string)=>{
-              if(props.unit.props){
-                props.unit.props.url = value
-              }else{
-                props.unit.props = {
-                  value
-                }
-              }
+              setProps(props.unit,"url",value);
               // setPropsById(unit.id,{value:value});
             }}></NInput>
         </div>
@@ -356,3 +351,74 @@ registerConfig.register({
   }
 })
 
+registerConfig.register({
+  label:"播放器",
+  name:"video",
+  defaultWidth:500,
+  defaultHeight:350,
+  preview:()=>(
+    <PreviewBox>
+      <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8512" width="32" height="32"><path d="M209.8 496.7c17.1 0 31.1-13.9 31.1-31.1 0-17.1-13.9-31-31.1-31s-31 13.9-31 31c-0.1 17.2 13.8 31.1 31 31.1zM345.1 750.2h-66c-37.3 0-45.9-8.6-45.9-45.9V534l-0.2-2.2h-0.2c-1.6-12.7-12.2-22.3-25.1-22.3-12.9 0-23.5 9.6-25.1 22.3h-0.4v172.4c0 66 30.8 96.8 96.8 96.8h66c14 0 25.4-11.4 25.4-25.4 0.1-14.1-11.3-25.4-25.3-25.4z" fill="#6B400D" p-id="8513"></path><path d="M959.3 251.8c0-71.9-58.5-130.4-130.4-130.4H194.7c-71.9 0-130.4 58.5-130.4 130.4v523.3c0 71.9 58.5 130.4 130.4 130.4h634.2c71.9 0 130.4-58.5 130.4-130.4V251.8z m-50.6 523.3c0 44-35.8 79.8-79.8 79.8H194.7c-44 0-79.8-35.8-79.8-79.8V251.8c0-44 35.8-79.8 79.8-79.8h634.2c44 0 79.8 35.8 79.8 79.8v523.3z" fill="#6B400D" p-id="8514"></path><path d="M684.1 469.8L486.1 343c-8.6-4.8-17.8-7-29.7-7-34 0-56 17.4-56 44.3v266.2c0 26.9 22 44.3 56 44.3 6.4 0 18.8-0.9 29.9-7.1l197.4-126.5c17.7-9 28.2-25.5 28.2-43.9 0-18.3-10.5-34.7-27.8-43.5z m-27.5 55.7L472 643.7c-3.2 1.5-4.9 1.5-8.1 1.5-8.1 0-16.2-6-16.2-15.1V396.7c0-9 8.1-15.1 16.2-15.1 3.2 0 6.5 0 8.1 1.5l184.6 118.2c6.5 4.5 8.1 10.5 8.1 12 0 3.2 0 9.2-8.1 12.2z" fill="#6B400D" p-id="8515"></path><path d="M656.6 501.4L472 383.2c-1.6-1.5-4.9-1.5-8.1-1.5-8.1 0-16.2 6-16.2 15.1v233.4c0 9 8.1 15.1 16.2 15.1 3.2 0 4.9 0 8.1-1.5l184.6-118.2c8.1-3 8.1-9 8.1-12 0-1.6-1.7-7.7-8.1-12.2z" fill="#FFD524" p-id="8516"></path></svg>
+    </PreviewBox>
+  ),
+  render:(props:any)=>{
+    return (
+      <BasicVideo {...props}></BasicVideo>
+    )
+  },
+  editProps:(props:{
+    unit:IComponentUnit
+  })=>(
+    <PropsEditBox>
+      <div class="props-item">
+        <div class="props-item-label">控件名：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"默认名为:"+props.unit.id} value={props.unit?.alias || ""} onUpdate:value={(value:string)=>{
+              props.unit.alias = value
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">src：</div>
+        <div class="props-item-content">
+          <NInput placeholder={"请输入视频路径"} value={props.unit.props?.src || ""} onUpdate:value={(value:string)=>{
+              setProps(props.unit,"src",value);
+              // setPropsById(unit.id,{value:value});
+            }}></NInput>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">宽度：</div>
+        <div class="props-item-content">
+          <NInputNumber placeholder={"视频宽度"} value={props.unit.props?.width || ""} onUpdate:value={(value)=>{
+              setProps(props.unit,"width",Number(value));
+            }} v-slots={{
+              suffix:()=>{
+                return <div style={{color:"#aaa"}}>px</div>
+              }
+            }}></NInputNumber>
+        </div>
+      </div>
+      <div class="props-item">
+        <div class="props-item-label">高度：</div>
+        <div class="props-item-content">
+          <NInputNumber placeholder={"视频高度"} value={props.unit.props?.height || ""} onUpdate:value={(value)=>{
+            setProps(props.unit,"height",Number(value));
+          }} v-slots={{
+            suffix:()=>{
+              return <div style={{color:"#aaa"}}>px</div>
+            }
+          }}></NInputNumber>
+        </div>
+      </div>
+    </PropsEditBox>
+  ),
+  contextProps:[{
+    name:"src",
+    description:"视频src"
+  }],
+  logicList:{
+    "onMounted":"初始化"
+  }
+})
