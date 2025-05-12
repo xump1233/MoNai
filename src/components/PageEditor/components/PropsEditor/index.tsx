@@ -30,7 +30,7 @@ export default defineComponent({
       <div class="page-editor-props-editor" style={{
         display:EditRender.value ? "block" : "none",
       }}>
-        <div class="props-editor-top"></div>
+        <div class="props-editor-top">组件属性编辑</div>
         <div class="props-editor-container">
           {EditRender.value && EditRender.value({unit:currentUnit.value})}
         </div>

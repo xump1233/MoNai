@@ -88,7 +88,7 @@ registerConfig.register({
         <div class="props-item">
           <div class="props-item-label">默认文本：</div>
           <div class="props-item-content">
-            <NInput placeholder={"请输入文本内容"} value={props.unit.props?.value || ""} onUpdate:value={(value:string)=>{
+            <NInput placeholder={"请输入文本内容"} type="textarea" value={props.unit.props?.value || ""} onUpdate:value={(value:string)=>{
               if(props.unit.props){
                 props.unit.props.value = value
               }else{
@@ -118,6 +118,30 @@ registerConfig.register({
             }}></input>
           </div>
         </div>
+        <div class="props-item">
+            <div class="props-item-label">宽度：</div>
+            <div class="props-item-content">
+              <NInputNumber placeholder={"宽度"} value={props.unit.props?.width || ""} onUpdate:value={(value)=>{
+                setProps(props.unit,"width",Number(value));
+              }} v-slots={{
+                suffix:()=>{
+                  return <div style={{color:"#aaa"}}>px</div>
+                }
+              }}></NInputNumber>
+            </div>
+          </div>
+          <div class="props-item">
+            <div class="props-item-label">高度：</div>
+            <div class="props-item-content">
+              <NInputNumber placeholder={"高度"} value={props.unit.props?.height || ""} onUpdate:value={(value)=>{
+                setProps(props.unit,"height",Number(value));
+              }} v-slots={{
+                suffix:()=>{
+                  return <div style={{color:"#aaa"}}>px</div>
+                }
+              }}></NInputNumber>
+            </div>
+          </div>
         
       </PropsEditBox>
     )
@@ -220,6 +244,7 @@ registerConfig.register({
               ></NSelect>
             </div>
           </div>
+          
         </PropsEditBox>
       )
     )

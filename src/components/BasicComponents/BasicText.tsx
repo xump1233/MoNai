@@ -17,6 +17,12 @@ export default defineComponent({
     },
     onClick:{
       type:Function
+    },
+    width:{
+      type:Number
+    },
+    height:{
+      type:Number
     }
   },
   setup(props){
@@ -28,7 +34,9 @@ export default defineComponent({
       <div
         style={{
           fontSize:props.fontSize + "px",
-          color:props.color
+          color:props.color,
+          width:props.width + "px",
+          height:props.height + "px",
         }}
         onClick={()=>{
           typeof props.onClick === "function" && props.onClick();

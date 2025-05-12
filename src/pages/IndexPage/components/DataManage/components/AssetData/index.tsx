@@ -310,7 +310,7 @@ export default defineComponent({
               </NUpload>
                 <div class="form-item">
                   <div class="form-item-label">名称：</div>
-                  <NInput placeholder={"请输入接口名称"} class="form-item-content" value={fileInfo.value?.name} onUpdate:value={(value:string)=>{
+                  <NInput placeholder={"请输入文件名称"} class="form-item-content" value={fileInfo.value?.name} onUpdate:value={(value:string)=>{
                     fileInfo.value.name = value
                   }}></NInput>
                 </div>
