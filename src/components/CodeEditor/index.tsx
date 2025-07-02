@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, readonly, ref } from "vue";
 
 import loader from '@monaco-editor/loader';
 import IDLE from "monaco-themes/themes/IDLE.json"
@@ -9,6 +9,12 @@ import { NSpin } from "naive-ui"
 
 export default defineComponent({
   props:{
+    isEditor:{
+      type:Boolean
+    },
+    type:{
+      type:String,
+    },
     style:{
       type:Object
     },
@@ -43,8 +49,9 @@ export default defineComponent({
         if(editorContainer.value){
           monacoInstance = monaco.editor.create(editorContainer.value,{
             value:props.initCode || "// 从下方编写你的代码",
-            language:"javascript",
+            language:props.type || "javascript",
             theme:"vs",
+            readonly:props.isEditor || false,
           });
           monaco.editor.defineTheme('mytheme', IDLE);
           monaco.editor.setTheme('mytheme');

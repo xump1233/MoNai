@@ -218,7 +218,6 @@ export default defineComponent({
               description:fileInfo.value.description,
               create_time:String(res.data.createTime)
             }
-
             Api.DATA.postCreateAsset(body).then(res=>{
               if(res.success){
                 (window as any).message.success("创建成功！");

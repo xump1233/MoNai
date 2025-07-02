@@ -23,8 +23,8 @@ const pageList = ref<IPageList>([]);
       }
     });
   }
-  function getPermissionPageList(){
-    API.PAGE.postPermissionPageList().then(res=>{
+  async function getPermissionPageList(){
+    return API.PAGE.postPermissionPageList().then(res=>{
       if(res.success){
         const list = res.data.list;
         const map = res.data.map;

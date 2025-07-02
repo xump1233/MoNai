@@ -45,7 +45,7 @@ const pageData = ref<IPageData>({
 });
 
 function changePageReta(value:number){
-  pageData.value.pageContainer.currentReta = value;
+  pageData.value.pageContainer.currentReta = Math.round(value * 10) / 10;
 }
 function backPageVersion(pageJSON:string){
   try{
@@ -55,11 +55,12 @@ function backPageVersion(pageJSON:string){
     (window as any).message.error("回滚异常：",err);
   }
 }
-function savePageData(success?:Function,error?:Function){
+function savePageData(description:string,success?:Function,error?:Function){
   const { pageId } = getSearch();
   Api.PAGE.setPageDataByPageId(pageId,{
     page_json:JSON.stringify(pageData.value),
-    create_time:String(Date.now())
+    create_time:String(Date.now()),
+    description:description,
   }).then(res=>{
     if(res.success){
       success && success();
@@ -125,35 +126,22 @@ function setLogicById(id:string,logicName:string,logicItem:ILogicItem){
 function zIndexMoveUpAndDown(id: string, op: "up" | "down") {
   const { unit } = findUnit(id);
   if (!unit || !unit.props) return;
-
   const { top, left, zIndex } = unit.position;
   const { width = 0, height = 0 } = unit.props as { width: number; height: number };
-
   // 准备计算相交的组件集合
   const overlaps: IComponentUnit[] = [];
-
   pageData.value.components.forEach((item: IComponentUnit) => {
     if (item.id === id || !item.props) return;
-
     const { top: cTop, left: cLeft, zIndex: _ } = item.position;
     const { width: cWidth = 0, height: cHeight = 0 } = item.props as { width: number; height: number };
-
-    const isOverlap =
-      left < cLeft + cWidth &&
-      left + width > cLeft &&
-      top < cTop + cHeight &&
-      top + height > cTop;
-
-    if (isOverlap) {
-      overlaps.push(item);
-    }
+    const isOverlap = left < cLeft + cWidth && left + width > cLeft &&
+      top < cTop + cHeight && top + height > cTop;
+    if (isOverlap) overlaps.push(item);
   });
-
   // 找到相交组件中层级最接近的
   let targetZIndex: number | null = null;
   overlaps.forEach((item) => {
     const diff = item.position.zIndex - zIndex;
-
     if (op === "up" && diff > 0) {
       if (targetZIndex === null || item.position.zIndex < targetZIndex) {
         targetZIndex = item.position.zIndex;
@@ -164,7 +152,6 @@ function zIndexMoveUpAndDown(id: string, op: "up" | "down") {
       }
     }
   });
-
   if (targetZIndex !== null) {
     unit.position.zIndex = op === "up" ? targetZIndex + 1 : targetZIndex - 1;
   }
@@ -199,6 +186,9 @@ function componentOver(target:IBasicComponent,position: { top: number; left: num
 function componentLeave(){
   pageData.value.components.pop();
   temporaryComponent = null;
+}
+function importComponents(list:IComponentUnit[]){
+  pageData.value.components = pageData.value.components.concat(list);
 }
 
 function findUnit(id:string){
@@ -307,6 +297,7 @@ export default function(){
     componentOver,
     componentLeave,
     changePageReta,
+    importComponents,
 
     findUnit,
     unFocusList,

@@ -4,6 +4,7 @@ import { DragState } from "@/constant"
 interface IBasicComponent {
   label:string;
   name:string;
+  type:"form" | "chart" | "media" | "extends" | "tem";
   defaultWidth:number;
   defaultHeight:number;
   preview:(props?:any)=>any;

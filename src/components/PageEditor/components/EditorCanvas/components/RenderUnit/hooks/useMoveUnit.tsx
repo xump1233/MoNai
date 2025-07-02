@@ -1,14 +1,21 @@
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, computed } from "vue";
 import usePageData from "@/hooks/usePageData";
 import type { IComponentUnit } from "@/interface";
 
 const SNAP_THRESHOLD = 2;
+interface CanvasRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
 
 export default function useUnitMove(id: string): {
   mouseDown: (e: MouseEvent) => void;
   setSnapEnable: (enable: boolean) => void;
 } {
   const {
+    pageData,
     focusUnit,
     unFocusAllUnit,
     moveFocusUnit,
@@ -24,6 +31,14 @@ export default function useUnitMove(id: string): {
   const startX = ref<number | undefined>();
   const startY = ref<number | undefined>();
   const enableSnap = ref<boolean>(true);
+  const canvasRect = computed(():CanvasRect=>{
+    return {
+      top:0,
+      left:0,
+      width:pageData.value.pageContainer.width as number,
+      height:pageData.value.pageContainer.height as number,
+    }
+  })
 
   function setSnapEnable(enable: boolean): void {
     enableSnap.value = enable;
@@ -54,8 +69,8 @@ export default function useUnitMove(id: string): {
   }
 
   function mouseMove(e: MouseEvent): void {
-    let offsetTop: number = 0;
-    let offsetLeft: number = 0;
+    let offsetTop = 0;
+    let offsetLeft = 0;
   
     if (lastLeft.value !== undefined && lastTop.value !== undefined) {
       offsetTop = e.clientY - lastTop.value;
@@ -73,16 +88,23 @@ export default function useUnitMove(id: string): {
   
     if (unit) {
       const { top, left } = unit.position as { top: number; left: number };
-      const { width: BWidth, height: BHeight } = unit.props as { width: number; height: number };
+      const { width: BWidth, height: BHeight } = unit.props as {
+        width: number;
+        height: number;
+      };
   
-      let newOffsetTop: number = offsetTop;
-      let newOffsetLeft: number = offsetLeft;
+      let newOffsetTop = offsetTop;
+      let newOffsetLeft = offsetLeft;
   
       const BTop = top + offsetTop;
       const BLeft = left + offsetLeft;
   
+      // === 1. 吸附组件逻辑 ===
       unFocusList.value.forEach((otherUnit: IComponentUnit) => {
-        const { top: ATop, left: ALeft } = otherUnit.position as { top: number; left: number };
+        const { top: ATop, left: ALeft } = otherUnit.position as {
+          top: number;
+          left: number;
+        };
         const { width: AWidth, height: AHeight } = otherUnit.props as {
           width: number;
           height: number;
@@ -119,18 +141,44 @@ export default function useUnitMove(id: string): {
         }
       });
   
+      // === 2. 吸附画布逻辑 ===
+      const canvasLinesY: [number, number, () => number][] = [
+        [canvasRect.value.top, BTop, () => canvasRect.value.top - top],
+        [canvasRect.value.top + canvasRect.value.height, BTop + BHeight, () => canvasRect.value.top + canvasRect.value.height - top - BHeight],
+        [canvasRect.value.top + canvasRect.value.height / 2, BTop + BHeight / 2, () => canvasRect.value.top + canvasRect.value.height / 2 - top - BHeight / 2],
+      ];
+  
+      const canvasLinesX: [number, number, () => number][] = [
+        [canvasRect.value.left, BLeft, () => canvasRect.value.left - left],
+        [canvasRect.value.left + canvasRect.value.width, BLeft + BWidth, () => canvasRect.value.left + canvasRect.value.width - left - BWidth],
+        [canvasRect.value.left + canvasRect.value.width / 2, BLeft + BWidth / 2, () => canvasRect.value.left + canvasRect.value.width / 2 - left - BWidth / 2],
+      ];
+  
+      for (const [a, b, adjust] of canvasLinesY) {
+        if (Math.abs(a - b) < SNAP_THRESHOLD) {
+          lines.y.add(a);
+          if (enableSnap.value) newOffsetTop = adjust();
+        }
+      }
+  
+      for (const [a, b, adjust] of canvasLinesX) {
+        if (Math.abs(a - b) < SNAP_THRESHOLD) {
+          lines.x.add(a);
+          if (enableSnap.value) newOffsetLeft = adjust();
+        }
+      }
+  
+      // === 3. 应用最终偏移 ===
       moveFocusUnit({
         offsetTop: newOffsetTop,
         offsetLeft: newOffsetLeft,
       });
-      
-      // 修复吸附导致的拖拽跳动
+  
       lastTop.value = (lastTop.value ?? e.clientY) + (newOffsetTop - offsetTop);
       lastLeft.value = (lastLeft.value ?? e.clientX) + (newOffsetLeft - offsetLeft);
-      
     }
   
-    // ✅ 无论是否启用吸附，都展示辅助线
+    // 展示辅助线
     setLines(lines);
   }
   

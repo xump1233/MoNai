@@ -49,7 +49,13 @@ export default defineComponent({
     })
     const templateOptions = [{
       value:"null",
-      label:"空模板"
+      label:"空模板(1980x1080)"
+    },{
+      value:"template1",
+      label:"模板1(1280x1024)"
+    },{
+      value:"template2",
+      label:"模板2(1280x768)"
     }]
 
     function handleCreatePage(){
@@ -67,7 +73,7 @@ export default defineComponent({
       })
     }
     const selectOptions = [{
-      value:"",
+      value:"all",
       label:"所有页面"
     },{
       value:"readonly",
@@ -79,9 +85,34 @@ export default defineComponent({
       value:"owner",
       label:"拥有"
     }]
-    const [filterInfo,filterInfoReset] = useResetRef({type:"",name:""});
+    
+    const [filterInfo,filterInfoReset] = useResetRef({permissionType:"all",pageName:"",timeRange:null});
     const handleFilter = ()=>{
-
+      let result = pageList.value;
+      if(filterInfo.value.permissionType !== "all"){
+        const pm = {
+          "edit":"1",
+          "readonly":"2",
+          "owner":undefined
+        }
+        result = result.filter((item)=>{
+          const t = filterInfo.value.permissionType as "edit" | "readonly" | "owner"
+          if(t === "owner"){
+            return !item.isPermission
+          }
+          return item.isPermission === Number(pm[t])
+        })
+      }
+      if(filterInfo.value.pageName !== ""){
+        result = result.filter((item)=>item.page_name.indexOf(filterInfo.value.pageName) !== -1);
+      }
+      if(filterInfo.value.timeRange !== null){
+        const range = filterInfo.value.timeRange as number[];
+        result = result.filter((item)=>{
+          return Number(item.page_create_time) >= range[0] && Number(item.page_create_time) <= range[1]
+        })
+      }
+      return result;
     }
     const handleFilterReset = ()=>{
       filterInfoReset();
@@ -90,9 +121,9 @@ export default defineComponent({
       <div class="page-list-container">
         <div class="page-list-header">
           <div style={{display:"flex",height:"50px",marginRight:"30px",alignItems:"center"}}>
-            权限等级：<NSelect options={selectOptions} placeholder="权限等级" style={{width:"150px",marginRight:"10px"}} v-model:value={filterInfo.value.type}></NSelect>
-            页面名称：<NInput placeholder={"请输入页面名称"} style={{width:"200px",height:"34px",marginRight:"10px"}} v-model:value={filterInfo.value.name}></NInput>
-            创建时间：<NDatePicker type="daterange" clearable style={{width:"300px"}} start-placeholder={"开始日期"} endPlaceholder="结束日期"></NDatePicker>
+            权限等级：<NSelect options={selectOptions} placeholder="权限等级" style={{width:"150px",marginRight:"10px"}} v-model:value={filterInfo.value.permissionType}></NSelect>
+            页面名称：<NInput placeholder={"请输入页面名称"} style={{width:"200px",height:"34px",marginRight:"10px"}} v-model:value={filterInfo.value.pageName}></NInput>
+            创建时间：<NDatePicker type="daterange" clearable style={{width:"300px"}} start-placeholder={"开始日期"} endPlaceholder="结束日期" v-model:value={filterInfo.value.timeRange}></NDatePicker>
             <NButton type="success" style={{marginLeft:"10px"}} onClick={handleFilter}>查找</NButton>
             <NButton type="warning" style={{marginLeft:"10px"}} onClick={handleFilterReset}>重置</NButton>
           </div>
@@ -103,7 +134,7 @@ export default defineComponent({
           </div>
         </div>
         <div class="page-list-content">
-          {pageList.value && pageList.value.map((item:IPageListItem)=>{
+          {pageList.value && handleFilter().map((item:IPageListItem)=>{
             return (
               <NTooltip
                 placement="bottom" trigger="hover"
@@ -116,7 +147,7 @@ export default defineComponent({
                         contentStyle={{padding:"10px"}}
                       >
                         <div class="page-item-info" onClick={()=>{
-                          router.push("/pageEditor?pageId="+item.page_id)
+                          router.push(`/pageEditor?pageId=${item.page_id}&pageName=${item.page_name}`)
                         }}>
                           <div class="page-item-info-name">{item.page_name}</div>
                           <div class="page-item-info-other">

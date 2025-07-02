@@ -4,7 +4,7 @@ import "./index.less";
 import getSearch from "@/utils/getSearch";
 import toFormatTime from "@/utils/toFormatTime";
 import bus from "@/utils/EventBus";
-import { NDropdown } from "naive-ui";
+import { NDropdown,NEllipsis } from "naive-ui";
 import usePageData from "@/hooks/usePageData";
 
 export default defineComponent({
@@ -18,12 +18,14 @@ export default defineComponent({
         return {
           key:item["page_version"],
           label:()=>{
-            return <div>
-              <span>{item["page_version"]}</span>
+            return <div style={{
+              display:"flex",
+            }}>
+              <span style={{width:"35px",borderRight:"1px solid #999",textAlign:"center"}}>{item["page_version"]}</span>
               &emsp;
-              <span>{toFormatTime(item["page_version_time"],true)}</span>
+              <NEllipsis style={{maxWidth:"115px"}}>{toFormatTime(item["page_version_time"],true)}</NEllipsis>
               &emsp;
-              <span>{item["page_changer"]}</span>
+              <NEllipsis style={{maxWidth:"50px"}}>{item["page_changer"]}</NEllipsis>
             </div>
           },
           props:{
@@ -51,6 +53,7 @@ export default defineComponent({
         if(res.success){
           backPageVersion(res.data["page_json"]);
           current.value = version;
+          (window as any).message.success("回滚成功！")
         }
       })
     }

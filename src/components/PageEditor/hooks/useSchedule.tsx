@@ -4,9 +4,7 @@ import type { IBottomBarItem } from "@/interface";
 
 // const { changePageReta } = usePageData();
 
-const barList = ref<IBottomBarItem[]>([{
-  name:"test"
-}]);
+const barList = ref<IBottomBarItem[]>([]);
 
 
 function pushItem(item:IBottomBarItem){

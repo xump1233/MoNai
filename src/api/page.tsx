@@ -3,7 +3,8 @@ import { postRequest, getRequest, requestHeaders } from "@/request";
 
 function setPageDataByPageId(pageId:string,body:{
   page_json:string;
-  create_time:string
+  create_time:string;
+  description?:string;
 }){
   return postRequest("/pageStore/setPageByPageId?pageId="+pageId,{
     headers:requestHeaders("json"),

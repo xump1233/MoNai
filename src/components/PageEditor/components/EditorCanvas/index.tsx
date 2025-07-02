@@ -1,4 +1,4 @@
-import { defineComponent,ref,onMounted,onUnmounted,watch  } from "vue";
+import { defineComponent,ref,onMounted,onUnmounted,watch,computed  } from "vue";
 import type { IComponentUnit } from "@/interface";
 import RenderUnit from "./components/RenderUnit";
 import ContextMenu from "@/components/ContextMenu/index.vue"
@@ -31,13 +31,15 @@ export default defineComponent({
     const message = useMessage();
     
 
-    const pageContainer = pageData.value.pageContainer;
-    const canvasSize = ref({
-      width:typeof pageContainer.width === 'string' ? pageContainer.width : pageContainer.width + 'px',
-      height:typeof pageContainer.height === 'string' ? pageContainer.height : pageContainer.height + 'px',
-      transformOrigin:"left top",
-      transform:`scale(${pageData.value.pageContainer.currentReta})`,
-    });
+    const canvasSize = computed(()=>{
+      return {
+        width:typeof pageData.value.pageContainer.width === 'string' ? pageData.value.pageContainer.width : pageData.value.pageContainer.width + 'px',
+        height:typeof pageData.value.pageContainer.height === 'string' ? pageData.value.pageContainer.height : pageData.value.pageContainer.height + 'px',
+        transformOrigin:"left top",
+        transform:`scale(${pageData.value.pageContainer.currentReta})`,
+      }
+    })
+
     watch(()=>pageData.value.pageContainer.currentReta,(newValue)=>{
       canvasSize.value.transform = `scale(${newValue})`;
     })

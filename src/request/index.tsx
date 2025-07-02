@@ -1,7 +1,7 @@
 import router from '@/router'
 
 const BASE_URL = "http://127.0.0.1:8080"
-const RENDER_URL = "http://127.0.0.1:5174"
+const RENDER_URL = "http://localhost:5174"
 
 // TODO request
 

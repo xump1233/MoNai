@@ -31,6 +31,7 @@ export default defineComponent({
     
     return ()=>(
       <div class="reta-bar-container">
+        <div style={{fontSize:"14px"}}>缩放比例：</div>
         <div class="reta-bar-change" onClick={sub}>-</div>
         <div class="reta-bar-content">
           <div class="reta-bar-base">

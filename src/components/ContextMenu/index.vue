@@ -46,7 +46,7 @@ watchEffect(()=>{
 </script>
 
 <template>
-    <div class="container" ref="box">
+    <div class="context-container" ref="box">
         <slot></slot>
         <Teleport to="body">
             <div class="context-menu" ref="menu" v-if="info.isVisible">
@@ -61,7 +61,7 @@ watchEffect(()=>{
 </template>
 
 <style scoped>
-.container{
+.context-container{
     width: auto;
     height: auto;
 }

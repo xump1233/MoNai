@@ -1,8 +1,7 @@
-import { defineComponent } from "vue";
+import { defineComponent, onMounted,ref } from "vue";
 import "./index.less"
-
+import getSearch from "@/utils/getSearch";
 import usePageData from "@/hooks/usePageData";
-import { useMessage } from "naive-ui"
 
 
 
@@ -11,17 +10,23 @@ export default defineComponent({
 
   },
   setup(_){
-    const { savePageData } = usePageData();
-    const message = useMessage();
+    const {pageName,pageId} = getSearch();
+    const { pageData } = usePageData();
+
+    const user = ref<string>("");
+    onMounted(()=>{
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+      user.value = userInfo?.username || "";
+    })
+
     return ()=>(
       <div class="page-editor-operate-bar" onClick={()=>{
-        savePageData(()=>{
-          message.success("保存成功！")
-        },()=>{
-          message.error("保存异常！！")
-        });
+        console.log(JSON.stringify(pageData.value,null,2))
       }}>
-        保留区域
+        <div>
+          <span>MoNai-LowCode Page-Solution</span>
+          <span>(当前页：{decodeURIComponent(pageName)}， pageid：{pageId}， 当前编辑人：{user.value})</span>
+        </div>
       </div>
     )
   }

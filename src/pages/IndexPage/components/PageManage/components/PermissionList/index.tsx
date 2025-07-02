@@ -157,7 +157,7 @@ export default defineComponent({
     };
     const handleSubmitPermission = () => {
       if (!modalInfo.value.pageId || !modalInfo.value.level) {
-        return;
+        return; // 表单值错误返回
       }
       API.PAGE.postCreatePagePermission({
         user: modalInfo.value.user,
@@ -169,10 +169,10 @@ export default defineComponent({
       }).then((res) => {
         if (res.success) {
           (window as any).message.success("添加成功！");
-          resetModalInfo();
-          getPermissionList();
+          resetModalInfo(); // 重置创建信息
+          getPermissionList(); // 刷新列表
           const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-          modalInfo.value.grantBy = userInfo?.username;
+          modalInfo.value.grantBy = userInfo?.username; // 矫正授权人
         }
       });
     };
