@@ -1,0 +1,15 @@
+{
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "public",
+    "src/assets",
+    "*.log",
+    "**/*.svg"
+  ],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "vite"
+  ]
+}
